@@ -1,0 +1,56 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_app
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+    volumes:
+      - .:/var/www
+      - ./docker/nginx.conf:/etc/nginx/sites-available/default
+      - ./docker/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+      - ./docker/ssl:/etc/nginx/ssl
+    networks:
+      - laravel_network
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_queue
+    restart: unless-stopped
+    command: php artisan queue:work --sleep=3 --tries=3
+    environment:
+      - APP_ENV=production
+    volumes:
+      - .:/var/www
+    networks:
+      - laravel_network
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel_scheduler
+    restart: unless-stopped
+    command: |
+      bash -c "
+        while true; do
+          php artisan schedule:run --verbose --no-interaction &
+          sleep 60
+        done"
+    environment:
+      - APP_ENV=production
+    volumes:
+      - .:/var/www
+    networks:
+      - laravel_network
+
+networks:
+  laravel_network:
+    driver: bridge

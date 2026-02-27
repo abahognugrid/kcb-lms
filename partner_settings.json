@@ -1,0 +1,23 @@
+{
+    "Identification_Code": "CB011",
+    "Institution_Type": "MNO",
+    "Institution_Name": "KCB Bank",
+    "License_Issuing_Date": "2021-01-05",
+    "License_Number": "6753090733573",
+    "Telephone_Number": "+17603359379",
+    "Email_Address": "ajacobson@bernhard.info",
+    "Country_Code": "UG",
+    "Minimum_Sms_Balance": 0,
+    "Minimum_Float_Percentage": 10,
+    "Sms_Reminder_Recipients": null,
+    "Email_Reminder_Recipients": null,
+    "Email_Notification_Recipients": null,
+    "Access_Type": "Loans",
+    "Accounting_Type": null,
+    "sms_price": "25.00",
+    "email": "ajacobson@bernhard.info",
+    "name": "KCB Bank",
+    "loan_products": [],
+    "api_setting": null,
+    "ovas": null
+}

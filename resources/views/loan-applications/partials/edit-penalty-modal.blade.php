@@ -1,0 +1,124 @@
+<div class="modal fade" id="editPenaltyModal{{ $penalty->id }}" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <form action="{{ route('loan-product-penalty.update', $penalty->id) }}" method="POST">
+                @csrf
+                @method('PUT')
+                <input type="hidden" value="{{ $loanProduct->id }}" name="Loan_Product_ID">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        Edit Penalty - {{ $penalty->Name }}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Penalty Name -->
+                    <div class="mb-4">
+                        <label for="Name" class="form-label">Penalty Name <x-required /></label>
+                        <input type="text" id="Name" class="form-control" placeholder="Enter penalty name"
+                            name="Name" value="{{ old('Name', $penalty->Name) }}">
+                    </div>
+
+                    <!-- Calculation Method and Value -->
+                    <div class="row g-6 mb-4">
+                        <div class="col mb-0">
+                            <label for="Calculation_Method" class="form-label">Calculation Method <x-required /></label>
+                            <select id="Calculation_Method" class="form-control" name="Calculation_Method"
+                                onchange="updateLabel()">
+                                <option value="">Choose...</option>
+                                <option value="Flat" {{ old('Calculation_Method', $penalty->Calculation_Method) == 'Flat' ? 'selected' : '' }}>Flat
+                                </option>
+                                <option value="Percentage"
+                                    {{ old('Calculation_Method', $penalty->Calculation_Method) == 'Percentage' ? 'selected' : '' }}>Percentage
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col mb-0">
+                            <label for="Value" id="ValueLabel" class="form-label">Value <x-required /></label>
+                            <input type="number" id="Value" class="form-control" step="0.01"
+                                placeholder="Enter value" name="Value" value="{{ old('Value', $penalty->Value) }}">
+                        </div>
+                    </div>
+
+                    <!-- Applicable On -->
+                    <div class="mb-4">
+                        <label for="Applicable_On" class="form-label">Applicable On <x-required /></label>
+                        <input type="text" id="Applicable_On" class="form-control"
+                            placeholder="Enter applicable conditions" name="Applicable_On"
+                            value="{{ old('Applicable_On', $penalty->Applicable_On) }}">
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label for="Description" class="form-label">Description <x-optional /></label>
+                        <textarea id="Description" class="form-control" placeholder="Enter description" name="Description">{{ old('Description', $penalty->Description) }}</textarea>
+                    </div>
+
+                    <!-- Recurring Penalty -->
+                    <div class="mb-4">
+                        <input type="checkbox" class="form-check-input" id="Has_Recurring_Penalty"
+                            name="Has_Recurring_Penalty" value="1"
+                            {{ old('Has_Recurring_Penalty', $penalty->Has_Recurring_Penalty) ? 'checked' : '' }}>
+                        <label for="Has_Recurring_Penalty" class="form-check-label">Has Recurring Penalty
+                            <x-optional /></label>
+                    </div>
+
+                    <!-- Recurring Penalty Interest Value -->
+                    <div class="mb-4">
+                        <label for="Recurring_Penalty_Interest_Value" class="form-label">Recurring Penalty Interest
+                            Value <x-optional /></label>
+                        <input type="number" class="form-control" step="0.01" id="Recurring_Penalty_Interest_Value"
+                            name="Recurring_Penalty_Interest_Value"
+                            value="{{ old('Recurring_Penalty_Interest_Value', $penalty->Recurring_Penalty_Interest_Value) }}">
+                    </div>
+
+                    <!-- Recurring Penalty Interest Period Type -->
+                    <div class="mb-4">
+                        <label for="Recurring_Penalty_Interest_Period_Type" class="form-label">Recurring Penalty
+                            Interest Period Type <x-optional /></label>
+                        <input type="text" class="form-control" id="Recurring_Penalty_Interest_Period_Type"
+                            name="Recurring_Penalty_Interest_Period_Type"
+                            value="{{ old('Recurring_Penalty_Interest_Period_Type', $penalty->Recurring_Penalty_Interest_Period_Type) }}">
+                    </div>
+
+                    <!-- Recurring Penalty Interest Period Value -->
+                    <div class="mb-4">
+                        <label for="Recurring_Penalty_Interest_Period_Value" class="form-label">Recurring Penalty
+                            Interest Period Value <x-optional /></label>
+                        <input type="number" class="form-control" id="Recurring_Penalty_Interest_Period_Value"
+                            name="Recurring_Penalty_Interest_Period_Value"
+                            value="{{ old('Recurring_Penalty_Interest_Period_Value', $penalty->Recurring_Penalty_Interest_Period_Value) }}">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                    &nbsp;&nbsp;
+                    <button type="submit" class="btn btn-dark">Update Penalty</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateLabel() {
+        const calculationMethod = document.getElementById('Calculation_Method').value;
+        const valueLabel = document.getElementById('ValueLabel');
+
+        if (calculationMethod === 'Flat') {
+            valueLabel.textContent = 'Amount';
+        } else if (calculationMethod === 'Percentage') {
+            valueLabel.textContent = 'Rate';
+        } else {
+            valueLabel.textContent = 'Value';
+        }
+    }
+
+    // Ensure correct label on page load if value is pre-selected
+    document.addEventListener('DOMContentLoaded', function() {
+        updateLabel();
+    });
+</script>
