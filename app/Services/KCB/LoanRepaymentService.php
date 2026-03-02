@@ -8,6 +8,7 @@ use App\Models\KCB\InitiateLoanRepaymentRequest;
 use App\Models\KCB\InitiateLoanRepaymentResponse;
 use App\Models\KCB\MoneyDetailsType;
 use App\Models\Loan;
+use App\Models\LoanProduct;
 use App\Models\LoanRepayment;
 use App\Models\Partner;
 use App\Services\LoanService;
@@ -47,6 +48,19 @@ class LoanRepaymentService
                     'Phone number does not match customer record'
                 );
             }
+
+            $loanProduct = LoanProduct::where('Code', $request->productid)->first();
+            if (!$loanProduct) {
+                return new InitiateLoanRepaymentResponse(
+                    null,
+                    null,
+                    null,
+                    null,
+                    'FAILED',
+                    'Invalid loan product: ' . $request->productid
+                );
+            }
+
             $partner = Partner::where('Identification_Code', 'CB011')->first();
 
             // Find active loans for the customer

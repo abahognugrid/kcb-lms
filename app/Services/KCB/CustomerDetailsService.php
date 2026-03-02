@@ -52,11 +52,21 @@ class CustomerDetailsService
         }
     }
 
-    private function handleLoanDetailsRequest(string $customerId, string $productId): GetCustomerDetailsResponse
+    private function handleLoanDetailsRequest(string $customerId, string $productCode): GetCustomerDetailsResponse
     {
         $partner = Partner::where('Identification_Code', 'CB011')->first();
+        $loanProduct = LoanProduct::where('Code', $productCode)->where('partner_id', $partner->id)->first();
+        if (!$loanProduct) {
+            return new GetCustomerDetailsResponse(
+                $customerId,
+                'REGISTERED',
+                null,
+                'FAILED',
+                'Loan product not found for code: ' . $productCode
+            );
+        }
         $loans = Loan::where('Customer_ID', $customerId)->where('partner_id', $partner->id)
-            ->where('Loan_Product_ID', $productId)
+            ->where('Loan_Product_ID', $loanProduct->id)
             ->get();
         $loanAccounts = [];
         foreach ($loans as $loan) {

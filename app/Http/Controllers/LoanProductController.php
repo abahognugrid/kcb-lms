@@ -14,6 +14,9 @@ use Exception;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class LoanProductController extends Controller
 {
@@ -184,8 +187,10 @@ class LoanProductController extends Controller
 
     public function show(Request $request, LoanProduct $loanProduct)
     {
-        $businessRules = BusinessRule::where('partner_id', $loanProduct->partner_id)
-            ->get();
+        $apiResponse = $this->getBusinessRules($loanProduct);
+        $rules = $apiResponse['rules'] ?? [];
+        $minimumPrincipal = $apiResponse ? $apiResponse['base_amount']['minimum'] : null;
+        $maximumPrincipal = $apiResponse ? $apiResponse['base_amount']['maximum'] : null;
         $loanProduct->load(
             'loan_product_type',
             'loan_product_terms',
@@ -193,9 +198,67 @@ class LoanProductController extends Controller
             'loan_product_penalties',
             'general_ledger_account'
         );
-        return view('loan-products.show', compact('loanProduct', 'businessRules'));
+        return view('loan-products.show', compact('loanProduct', 'rules', 'maximumPrincipal', 'minimumPrincipal'));
     }
 
+    private function getBusinessRules(LoanProduct $loanProduct)
+    {
+        try {
+            $accessToken = $this->getAccessToken();
+            // Step 2: Use the access token to call the Loan Market API
+            $apiResponse = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'Authorization' => 'Bearer ' . $accessToken,
+            ])->post(config('lms.crb.url') . '/v1/loan-market/business-rules', [
+                'partnerCode' => $loanProduct->partner->Identification_Code,
+                'productReference' => $loanProduct->Code,
+            ]);
+
+            Log::info('Business Rules Response: ' . $apiResponse->body());
+
+            if ($apiResponse->successful()) {
+                return $apiResponse->json();
+            }
+
+            Log::error('Failed to retrieve business rules: ' . $apiResponse->body());
+
+            return [];
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+    protected function getAccessToken(): string
+    {
+        try {
+            $accessToken = Cache::get('api_access_token');
+
+            if ($accessToken) {
+                return $accessToken;
+            }
+
+            // Step 1: Get the access token
+            $tokenResponse = Http::asForm()
+                ->post(config('lms.crb.url') . '/v1/oauth/token', [
+                    'grant_type' => 'client_credentials',
+                    'client_id' => config('lms.crb.client-id'),
+                    'client_secret' => config('lms.crb.client-secret'),
+                ]);
+            Log::info('Token Response: ' . $tokenResponse->body());
+
+            if ($tokenResponse->successful()) {
+                $accessToken = $tokenResponse->json()['access_token'];
+                $tokenLifeTime = $tokenResponse->json()['expires_in']; // seconds
+                Cache::put('api_access_token', $accessToken, $tokenLifeTime);
+                return $accessToken;
+            }
+
+            Log::error('Failed to retrieve access token: ' . $tokenResponse->body());
+            throw new Exception('Failed to get access token');
+        } catch (\Exception $exception) {
+            return '';
+        }
+    }
     public function delete(LoanProduct $loanProduct)
     {
         try {

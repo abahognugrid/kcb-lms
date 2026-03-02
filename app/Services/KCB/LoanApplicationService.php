@@ -48,13 +48,13 @@ class LoanApplicationService
             }
 
             // Validate loan product exists and is active
-            $loanProduct = LoanProduct::where('id', $request->productid)->where('partner_id', $partnerId)->first();
+            $loanProduct = LoanProduct::where('Code', $request->productid)->where('partner_id', $partnerId)->first();
 
             if (!$loanProduct) {
                 return new InitiateLoanApplicationResponse(
                     null,
                     'FAILED',
-                    'Invalid or inactive loan product'
+                    'Invalid or inactive loan product: ' . $request->productid
                 );
             }
 

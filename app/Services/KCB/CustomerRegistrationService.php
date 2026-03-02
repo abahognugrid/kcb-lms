@@ -23,6 +23,20 @@ class CustomerRegistrationService
             // Map the Airtel API fields to your database fields
             $customerData = $this->mapToCustomerModel($request);
 
+            $existingNationalID = Customer::where('ID_Number', $customerData['ID_Number'])->first();
+            if ($existingNationalID) {
+                $phoneNumbers = Customer::where('ID_Number', $customerData['ID_Number'])->pluck('Telephone_Number')->toArray();
+                // phone numbers should not be more than 3 for a single national ID
+                if (count($phoneNumbers) >= 5) {
+                    return new CustomerRegistrationResponse(
+                        null,
+                        null,
+                        'FAILED',
+                        'Customer with this National ID already has 3 registered phone numbers: ' . implode(', ', $phoneNumbers)
+                    );
+                }
+            }
+
             // Check if customer already exists
             $existingCustomer = Customer::where('Telephone_Number', $customerData['Telephone_Number'])->first();
 

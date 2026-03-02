@@ -3,7 +3,7 @@
 use App\Http\Controllers\KCB\KCBUssdChannelApiController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('mkcb/api')->group(function () {
+Route::prefix('mkcb')->group(function () {
     Route::prefix('v1')->group(function () {
         Route::post('/contextCustomerRegistration', [KCBUssdChannelApiController::class, 'contextCustomerRegistration']);
         Route::post('/contextGetCustomerDetails', [KCBUssdChannelApiController::class, 'contextGetCustomerDetails']);

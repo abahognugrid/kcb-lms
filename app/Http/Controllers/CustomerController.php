@@ -16,7 +16,7 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $query = $this->scopeToPartnerType();
+        $query = Customer::query();
 
         if ($request->has('search') && ! empty($request->search)) {
             $search = $request->search;
@@ -203,26 +203,6 @@ class CustomerController extends Controller
     public function blackListedReport()
     {
         return view('reports.borrowers.black_listed_report');
-    }
-
-    protected function scopeToPartnerType(): Builder
-    {
-        $partner = request()->user()->partner;
-        $query = Customer::query();
-
-        if (empty($partner)) {
-            return $query;
-        }
-
-        $partnerId = $partner->id;
-
-        if ($partner->hasLoansAccess()) {
-            return $query->whereHas('loans', function ($query) use ($partnerId) {
-                $query->where('partner_id', $partnerId);
-            });
-        }
-
-        return $query;
     }
 
     public function blacklistCustomer(Request $request)

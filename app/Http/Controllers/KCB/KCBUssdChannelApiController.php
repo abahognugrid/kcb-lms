@@ -249,4 +249,13 @@ class KCBUssdChannelApiController extends Controller
         return response($errorResponse->toXml(), $statusCode)
             ->header('Content-Type', 'application/xml');
     }
+
+    public function handleCallback(Request $request)
+    {
+        // Log the incoming callback request
+        Log::info('Received disbursement callback', [
+            'headers' => $request->headers->all(),
+            'content' => $request->getContent()
+        ]);
+    }
 }

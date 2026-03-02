@@ -40,19 +40,13 @@
                 <li class="list-group-item d-flex justify-content-between">
                     <strong>Minimum Principal Amount</strong>
                     <span>
-                        <x-money :value="$loanProduct->Minimum_Principal_Amount" />
-                    </span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between">
-                    <strong>Default Principal Amount</strong>
-                    <span>
-                        <x-money :value="$loanProduct->Default_Principal_Amount" />
+                        <x-money :value="$minimumPrincipal" />
                     </span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
                     <strong>Maximum Principal Amount</strong>
                     <span>
-                        <x-money :value="$loanProduct->Maximum_Principal_Amount" />
+                        <x-money :value="$maximumPrincipal" />
                     </span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
@@ -158,6 +152,121 @@
         @include('loan-products.partials.create-term-modal')
     </div>
 
+    @if ($loanProduct->loan_product_type->Code == 0)
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Asset Loan Add-ons</h5>
+                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#createAddonModal"
+                    class="btn btn-sm btn-dark" role="button">Add ADD-ONS to this product</a>
+            </div>
+            <div class="card-body">
+                @if ($loanProduct->loan_product_addons->isEmpty())
+                    <p>There are no add-ons configured for this loan product.</p>
+                @else
+                    @foreach ($loanProduct->loan_product_addons as $addon)
+                        <ul class="list-group mb-4">
+                            <li class="list-group-item d-flex justify-content-between">
+                                <strong>
+                                    Name
+                                </strong>
+                                <span>
+                                    {{ $addon->Name }}
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <strong>
+                                    Term/Tenure
+                                </strong>
+                                <span>
+                                    {{ $addon->Term }} Days
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <strong>
+                                    Repayment Cycle
+                                </strong>
+                                <span class="badge rounded-pill bg-label-primary">
+                                    {{ $addon->Repayment_Cycle }}
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <strong>
+                                    Interest Rate
+                                </strong>
+                                <span>
+                                    {{ $addon->Interest_Rate }}%
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <strong>
+                                    Interest Cycle
+                                </strong>
+                                <span>
+                                    {{ $addon->Interest_Cycle }}
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <strong>
+                                    Interest Calculation Method
+                                </strong>
+                                <span>
+                                    {{ $addon->Interest_Calculation_Method }}
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <strong>
+                                    Charge Interest
+                                </strong>
+                                <span>
+                                    {{ $addon->Charge_Interest_On }}
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <strong>
+                                    Amount
+                                </strong>
+                                <span>
+                                    <x-money :value="$addon->Amount" />
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <strong>
+                                    Downpayment Percentage
+                                </strong>
+                                <span>
+                                    {{ $addon->Downpayment_Percentage ?? 0 }}%
+                                </span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <strong>Actions</strong>
+                                @if (Auth::user()->is_admin)
+                                    <div class="btn-group">
+                                        <a class="btn btn-sm btn-outline-danger" href="javascript:void(0);"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#confirmDeleteAddonModal{{ $addon->id }}">
+                                            <span>Remove</span>
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-info" href="javascript:void(0);"
+                                            data-bs-toggle="modal" data-bs-target="#editAddonModal{{ $addon->id }}">
+                                            <span>Edit</span>
+                                        </a>
+                                    </div>
+                                @endif
+                            </li>
+                        </ul>
+                        <br>
+                        <!-- Delete Modal -->
+                        @include('loan-products.partials.delete-addon-modal')
+                        <!-- Edit modal -->
+                        @include('loan-products.partials.edit-addon-modal')
+                    @endforeach
+                @endif
+            </div>
+            <!--  Create Modal -->
+            @include('loan-products.partials.create-addon-modal')
+        </div>
+    @endif
+
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Loan Product Fees</h5>
@@ -249,11 +358,12 @@
                             @if (Auth::user()->is_admin)
                                 <div class="btn-group">
                                     <a class="btn btn-sm btn-outline-danger" href="javascript:void(0);"
-                                        data-bs-toggle="modal" data-bs-target="#confirmDeleteFeeModal{{ $fee->id }}">
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeleteFeeModal{{ $fee->id }}">
                                         <span>Remove</span>
                                     </a>
-                                    <a class="btn btn-sm btn-outline-info" href="javascript:void(0);" data-bs-toggle="modal"
-                                        data-bs-target="#editFeeModal{{ $fee->id }}">
+                                    <a class="btn btn-sm btn-outline-info" href="javascript:void(0);"
+                                        data-bs-toggle="modal" data-bs-target="#editFeeModal{{ $fee->id }}">
                                         <span>Edit</span>
                                     </a>
                                 </div>
@@ -381,17 +491,22 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Business Rules</h5>
         </div>
+
         <div class="card-body">
             <ul class="list-group">
-                @foreach ($businessRules as $rule)
+                @foreach ($rules as $ruleName => $limits)
                     <li class="list-group-item d-flex justify-content-between">
-                        <strong>{{ $rule->parameter->Name }}</strong>
-                        <span>{{ $rule->Value }}</span>
+                        <strong>{{ $ruleName }}</strong>
+                        <span>
+                            Min: {{ number_format($limits['minimum']) }} |
+                            Max: {{ number_format($limits['maximum']) }}
+                        </span>
                     </li>
                 @endforeach
             </ul>
         </div>
     </div>
+
 
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
