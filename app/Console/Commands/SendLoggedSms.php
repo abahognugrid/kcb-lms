@@ -78,7 +78,7 @@ class SendLoggedSms extends Command
 
     protected function sendSms($phoneNumber, $message, $senderID)
     {
-        if (local() || testing() || staging()) {
+        if (app()->isLocal()) {
             Log::info('Sms sent to phone: ' . $phoneNumber . ', Content: ' . $message . 'SenderID: ' . $senderID);
             return true;
         }

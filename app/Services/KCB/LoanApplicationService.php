@@ -27,6 +27,16 @@ class LoanApplicationService
     {
         DB::beginTransaction();
         try {
+            //check if requestreference is already used
+            $requestId = $request->requestreference;
+            $existingApplication = LoanApplication::where('Request_ID', $requestId)->first();
+            if ($existingApplication) {
+                return new InitiateLoanApplicationResponse(
+                    null,
+                    'FAILED',
+                    'Request ID has already been used.'
+                );
+            }
             // Validate customer exists
             $customer = Customer::where('Telephone_Number', $request->resource)->first();
             $partnerId = Partner::where('Identification_Code', 'CB011')->first()->id;

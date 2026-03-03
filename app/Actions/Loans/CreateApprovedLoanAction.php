@@ -20,7 +20,7 @@ class CreateApprovedLoanAction
     {
         try {
             $transaction->loadMissing(['customer', 'loanApplication']);
-            $creditAccountType = LoanProductType::where('Name', 'Mobile Loan')->first();
+            $creditAccountType = LoanProductType::first();
             $loanApplicationSession = $transaction->loanApplication->loan_session;
             $loanApplicationSession->loadMissing('loanProductTerm');
             $loanProductTerm = $loanApplicationSession->loanProductTerm;
@@ -108,11 +108,6 @@ class CreateApprovedLoanAction
     {
         $message = ' at ';
         $interestRate = $loan->Interest_Rate;
-
-        $loanProduct = $loan->loan_product;
-
-        $switch = $loanProduct->switch;
-
         return $message . $interestRate . '% interest has been approved.';
     }
 }

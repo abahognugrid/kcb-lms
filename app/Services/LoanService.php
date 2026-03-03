@@ -29,8 +29,7 @@ class LoanService
             'Amount' => $amount,
             'Status' => 'Pending',
             'Telephone_Number' => $customer->Telephone_Number,
-            'TXN_ID' => Transaction::generateID(),
-            'Provider_TXN_ID' => app()->isLocal() ? Transaction::generateID() : null,
+            'TXN_ID' => random_int(1000000000, 9999999999),
             'Loan_Application_ID' => $applicationId
         ]);
 
@@ -132,23 +131,24 @@ class LoanService
         $url = config('lms.payments.bank_api_url');
 
         try {
-            // if (local()) {
-            return [
-                'TXNSTATUS' => 200,
-                'TXNID' => Transaction::generateID(),
-                'MESSAGE' => 'Simulated success in local environment'
-            ];
-            // }
-            // $response = Http::withHeaders([
-            //     'Content-Type' => 'application/xml',
-            // ])->send('POST', $url, [
-            //     'body' => $xmlRequest,
-            // ]);
-            // $responseXml = $response->body();
-            // Log::info('Disbursement Response', ['body' => $responseXml]);
-            // $xml = simplexml_load_string($responseXml, "SimpleXMLElement", LIBXML_NOCDATA);
-            // $json = json_encode($xml);
-            // return json_decode($json, true);
+            if (app()->isLocal()) {
+                return [
+                    'TXNSTATUS' => 200,
+                    'TXNID' => random_int(100000000000, 999999999999),
+                    'MESSAGE' => 'SENT.TID 131609401618. UGX 148,500 to SAM KAKOOZA  0740618886. Fee UGX 0. Bal UGX 1,066,244,314. Date 26-September-2025 17:54.',
+                    'EXTTRID' => $transactionId,
+                ];
+            }
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/xml',
+            ])->send('POST', $url, [
+                'body' => $xmlRequest,
+            ]);
+            $responseXml = $response->body();
+            Log::info('Disbursement Response', ['body' => $responseXml]);
+            $xml = simplexml_load_string($responseXml, "SimpleXMLElement", LIBXML_NOCDATA);
+            $json = json_encode($xml);
+            return json_decode($json, true);
         } catch (\Exception $e) {
             Log::error('Disbursement error', ['error' => $e->getMessage()]);
             return false;
