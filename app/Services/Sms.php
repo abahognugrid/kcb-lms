@@ -30,7 +30,7 @@ class Sms
                 'action'      => 'sendmessage',
                 'username'    => config('sms.kcb.username'),
                 'password'    => config('sms.kcb.password'),
-                'recipient'   => $phone,
+                'recipient'   => '256700460055', // change this to $phone
                 'messagetype' => 'SMS:TEXT',
                 'messagedata' => $message,
             ]);
