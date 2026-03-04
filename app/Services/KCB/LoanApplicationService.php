@@ -29,14 +29,16 @@ class LoanApplicationService
         try {
             //check if requestreference is already used
             $requestId = $request->requestreference;
-            $existingApplication = LoanApplication::where('Request_ID', $requestId)->first();
-            if ($existingApplication) {
+            $usedApplicationRequestID = LoanApplication::where('Request_ID', $requestId)->first();
+            if ($usedApplicationRequestID) {
                 return new InitiateLoanApplicationResponse(
                     null,
                     'FAILED',
                     'Request ID has already been used.'
                 );
             }
+
+
             // Validate customer exists
             $customer = Customer::where('Telephone_Number', $request->resource)->first();
             $partnerId = Partner::where('Identification_Code', 'CB011')->first()->id;
@@ -45,15 +47,6 @@ class LoanApplicationService
                     null,
                     'FAILED',
                     'Customer not found'
-                );
-            }
-
-            // Validate phone number matches customer
-            if ($customer->Telephone_Number !== $request->resource) {
-                return new InitiateLoanApplicationResponse(
-                    null,
-                    'FAILED',
-                    'Phone number does not match customer record'
                 );
             }
 
@@ -78,6 +71,33 @@ class LoanApplicationService
                         number_format($loanProduct->Minimum_Principal_Amount, 2),
                         number_format($loanProduct->Maximum_Principal_Amount, 2)
                     )
+                );
+            }
+
+            $creditLimit = $customer->creditLimits()->latest()->first();
+            if (!$creditLimit) {
+                return new InitiateLoanApplicationResponse(
+                    null,
+                    'FAILED',
+                    'You do not have a credit limit assigned yet!'
+                );
+            }
+
+            $maxAmount = $creditLimit->credit_limit;
+            if ($request->amount > $maxAmount) {
+                return new InitiateLoanApplicationResponse(
+                    null,
+                    'FAILED',
+                    'The requested amount is greater than your credit limit of ' . number_format($maxAmount)
+                );
+            }
+
+            $pendingApplication = LoanApplication::where('Customer_ID', $customer->id)->where('Credit_Application_Status', 'Pending')->first();
+            if ($pendingApplication) {
+                return new InitiateLoanApplicationResponse(
+                    null,
+                    'FAILED',
+                    'You still have a pending application. please wait until it is finalized'
                 );
             }
 
@@ -132,7 +152,7 @@ class LoanApplicationService
                 'Applicant_Classification' => $customer->Classification,
                 'Credit_Application_Date' => Carbon::now(),
                 'Amount' => $request->amount,
-                'Credit_Application_Status' => 'Approved',
+                'Credit_Application_Status' => 'Pending',
                 'Credit_Account_or_Loan_Product_Type' => 14,
                 'Credit_Application_Duration' => '0', // time between application and the time it is approved or rejected. This is auto so zero(0)
                 'Client_Consent_flag' => 'Yes',

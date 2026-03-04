@@ -186,14 +186,16 @@
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>#</th>
-                                            <th>Assigned Limit</th>
-                                            <th>Used Credit</th>
-                                            <th>Available Credit</th>
-                                        </tr>
-                                    </thead>
+                                    @if ($creditLimits->count() > 0)
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Assigned Limit</th>
+                                                <th>Used Credit</th>
+                                                <th>Available Credit</th>
+                                            </tr>
+                                        </thead>
+                                    @endif
                                     <tbody>
                                         @foreach ($creditLimits as $creditLimit)
                                             <tr>

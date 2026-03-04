@@ -10,6 +10,7 @@ use App\Models\KCB\CustomerRegistrationRequest as RegistrationRequest;
 use App\Models\KCB\CustomerRegistrationResponse;
 use App\Models\Partner;
 use App\Models\SavingsProduct;
+use App\Notifications\SmsNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -66,6 +67,8 @@ class CustomerRegistrationService
                 $savingsAccountResponse = $this->mapToSavingsAccountResponse($savingsAccount);
 
                 DB::commit();
+
+
 
                 return new CustomerRegistrationResponse(
                     $existingCustomer->id,

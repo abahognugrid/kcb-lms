@@ -18,6 +18,7 @@ class LoanProductSeeder extends Seeder
         foreach (Partner::all() as $partner) {
             $loanProduct = LoanProduct::create([
                 'Name' => 'Agent Loan',
+                'Code' => 'AG_SNL',
                 'partner_id' => $partner->id,
                 'Loan_Product_Type_ID' => LoanProductType::first()->id,
                 'Minimum_Principal_Amount' => 5000,

@@ -74,10 +74,6 @@ class LoanProduct extends Model implements Accountable, Auditable
     {
         parent::boot();
         static::addGlobalScope(new PartnerScope);
-        self::creating(function ($loan_product) {
-            $id = strtoupper(uniqid());
-            $loan_product->Code = "LP-{$id}";
-        });
         self::created(function (LoanProduct $loan_product) {
             AccountSeederService::addToFixedAccount($loan_product);
         });

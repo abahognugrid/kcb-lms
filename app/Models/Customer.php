@@ -6,6 +6,7 @@ use App\Enums\LoanAccountType;
 use App\Models\LoanRepayment;
 use App\Models\LoanDisbursement;
 use App\Models\Scopes\BarnScope;
+use App\Notifications\SmsNotification;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use App\Rules\ValidPhoneNumber;
@@ -57,6 +58,17 @@ class Customer extends Model
     {
         static::addGlobalScope(new BarnScope); // You can barn a customer.
         static::created(function ($customer) {
+            $partner = Partner::first();
+            $customer->notify(
+                new SmsNotification(
+                    'Dear ' . $customer->name . ', your KCB Agent Loan account has been created successfully. Contact KCB for any assistance.',
+                    $customer->Telephone_Number,
+                    $customer->id,
+                    $partner->id,
+                    $partner->smsPrice(),
+                    $partner->smsCost(),
+                )
+            );
             $customer->storeCreditLimit();
         });
     }
@@ -271,7 +283,7 @@ class Customer extends Model
                 Log::info('API call successful: ' . $apiResponse->body());
                 $responseData = $apiResponse->json();
                 $creditLimit = data_get($responseData, 'data.Decision.credit_limit');
-                $partner = Partner::where('Identification_Code', 'CB011')->first();
+                $partner = Partner::first();
 
                 CreditLimit::create([
                     'customer_id' => $this->id,
@@ -282,6 +294,17 @@ class Customer extends Model
                     'Created_At' => Carbon::now(),
                     'Updated_At' => Carbon::now(),
                 ]);
+                $customer = Customer::find($this->id);
+                $customer->notify(
+                    new SmsNotification(
+                        'Dear ' . $customer->name . ', welcome to KCB Agent Loan. Your credit limit is UGX ' . number_format($creditLimit) . '. You can borrow up to this amount anytime. Contact KCB for assistance.',
+                        $customer->Telephone_Number,
+                        $customer->id,
+                        $partner->id,
+                        $partner->smsPrice(),
+                        $partner->smsCost(),
+                    )
+                );
             } else {
                 Log::error('API call failed: ' . $apiResponse->body());
             }

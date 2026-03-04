@@ -25,24 +25,41 @@ class Sms
 
     public function sendSms($phone, $message): bool
     {
-        $response = Http::get(config('sms.kcb.base_url') . '/api/kcb/sendsms', [
-            'action'      => 'sendmessage',
-            'username'    => config('sms.kcb.username'),
-            'password'    => config('sms.kcb.password'),
-            'recipient'   => $phone,
-            'messagetype' => 'SMS:TEXT',
-            'messagedata' => $message, // Http client auto-encodes
-        ]);
-        if ($response->successful()) {
-            Log::info('Sms sent with KCB SMS service', [
+        try {
+            $response = Http::get(config('sms.kcb.base_url') . '/api/kcb/sendsms', [
+                'action'      => 'sendmessage',
+                'username'    => config('sms.kcb.username'),
+                'password'    => config('sms.kcb.password'),
+                'recipient'   => $phone,
+                'messagetype' => 'SMS:TEXT',
+                'messagedata' => $message,
+            ]);
+
+            if ($response->successful()) {
+
+                Log::info('SMS sent successfully', [
+                    'phone' => $phone,
+                    'status' => $response->status(),
+                ]);
+
+                return true;
+            }
+
+            Log::warning('SMS API returned error', [
                 'phone' => $phone,
-                'message' => $message,
+                'status' => $response->status(),
                 'response' => $response->body(),
             ]);
-            return true;
-        }
 
-        // Optionally, you can throw an exception or handle errors here
-        throw new Exception('Failed to send SMS: ' . $response->body());
+            return false;
+        } catch (\Throwable $e) {
+
+            Log::error('SMS sending failed', [
+                'phone' => $phone,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
     }
 }

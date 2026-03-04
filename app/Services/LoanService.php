@@ -121,8 +121,8 @@ class LoanService
             <MSISDN>{$bankAccount}</MSISDN>
             <MSISDN2>{$phone}</MSISDN2>
             <AMOUNT>{$amount}</AMOUNT>
-            <EXTTRID>{{$transactionId}}</EXTTRID>
-            <REFERENCE>{{$transactionId}}</REFERENCE>
+            <EXTTRID>{$transactionId}</EXTTRID>
+            <REFERENCE>{$transactionId}</REFERENCE>
             <USERNAME>{$bankUsername}</USERNAME>
             <PASSWORD>{$bankPassword}</PASSWORD>
         </COMMAND>
