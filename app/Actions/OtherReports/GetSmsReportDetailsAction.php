@@ -8,6 +8,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class GetSmsReportDetailsAction
 {
@@ -19,9 +20,11 @@ class GetSmsReportDetailsAction
     public function execute(): \Illuminate\Database\Eloquent\Collection|\Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         $query = DatabaseNotification::query()
-            ->where('partner_id', $this->partnerId)
             ->with('notifiable')
             ->where('type', SmsNotification::class)
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })
             ->when($this->startDate && $this->endDate, function ($query) {
                 $query->whereBetween('created_at', [
                     Carbon::parse($this->startDate)->startOfDay()->toDateTimeString(),
@@ -49,7 +52,7 @@ class GetSmsReportDetailsAction
     {
         $this->startDate = Arr::get($details, 'startDate', now()->startOfMonth()->toDateString());
         $this->endDate = Arr::get($details, 'endDate', now()->toDateString());
-        $this->partnerId = Arr::get($details, 'partnerId', Auth()->user()?->partner_id);
+        $this->partnerId = Arr::get($details, 'partnerId', Auth::user()?->partner_id);
 
         if (Carbon::parse($this->endDate)->isFuture()) {
             $this->endDate = now()->toDateString();

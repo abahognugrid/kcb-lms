@@ -28,7 +28,9 @@ class GetLoanAgeingReportDetailsAction
     public function execute(): \Illuminate\Database\Eloquent\Collection|\Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         $query = Loan::query()
-            ->where('partner_id', $this->partnerId)
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })
             ->when($this->loanProductId, function ($query) {
                 return $query->where('Loan_Product_ID', $this->loanProductId);
             })

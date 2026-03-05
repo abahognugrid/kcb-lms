@@ -22,11 +22,6 @@ class GetRepaymentReportDetailsAction
 
     protected int $perPage = 0;
 
-    private function addPartnerCondition($query, $partnerId, $column = 'partner_id')
-    {
-        return $partnerId ? $query->where($column, $partnerId) : $query;
-    }
-
     public function execute()
     {
         $partner_id = $this->partnerId;
@@ -43,28 +38,24 @@ class GetRepaymentReportDetailsAction
             })
             ->whereDate('lp1.Transaction_Date', '<=', $this->endDate)
             ->groupBy('lp1.Loan_ID');
-        $paidInPeriodSubquery = $this->addPartnerCondition($paidInPeriodSubquery, $partner_id, 'lp1.partner_id');
 
         $principalArrearsSubQuery = DB::table('loans as l2')
             ->selectRaw('ls2.loan_id, SUM(ls2.principal) AS amount')
             ->join('loan_schedules as ls2', 'ls2.loan_id', '=', 'l2.id')
             ->whereDate('ls2.payment_due_date', '<', $this->endDate)
             ->groupBy('ls2.loan_id');
-        $principalArrearsSubQuery = $this->addPartnerCondition($principalArrearsSubQuery, $partner_id, 'l2.partner_id');
 
         $principalDueInPeriodSubquery = DB::table('loans as l3')
             ->selectRaw('ls3.loan_id, SUM(ls3.principal) AS amount')
             ->join('loan_schedules as ls3', 'ls3.loan_id', '=', 'l3.id')
             ->whereDate('ls3.payment_due_date', '<=', $this->endDate)
             ->groupBy('ls3.loan_id');
-        $principalDueInPeriodSubquery = $this->addPartnerCondition($principalDueInPeriodSubquery, $partner_id, 'l3.partner_id');
 
         $principalDueOnReportingDateSubquery = DB::table('loans as l4')
             ->selectRaw('ls4.loan_id, SUM(ls4.principal) AS amount')
             ->join('loan_schedules as ls4', 'ls4.loan_id', '=', 'l4.id')
             ->whereDate('ls4.payment_due_date', '=', $this->endDate)
             ->groupBy('ls4.loan_id');
-        $principalDueOnReportingDateSubquery = $this->addPartnerCondition($principalDueOnReportingDateSubquery, $partner_id, 'l4.partner_id');
 
         $recoveredInPeriodSubquery = DB::table('written_off_loans as wol')
             ->selectRaw('wol."Loan_ID", SUM(wol."Amount_Written_Off") AS principal_recovered')
@@ -79,11 +70,11 @@ class GetRepaymentReportDetailsAction
             ->whereDate('wol.Written_Off_Date', '<=', $this->endDate)
             ->where('Is_Recovered', 1)
             ->groupBy('wol.Loan_ID');
-        $recoveredInPeriodSubquery = $this->addPartnerCondition($recoveredInPeriodSubquery, $partner_id, 'wol.partner_id');
 
         $query = Loan::query()
-            ->where('partner_id', $partner_id)
-            ->with(['customer', 'loan_repayments', 'loan_schedules', 'write_offs'])
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })->with(['customer', 'loan_repayments', 'loan_schedules', 'write_offs'])
             ->addSelect([
                 'due_date' => function ($query) {
                     $query->selectRaw('COALESCE(loan_schedules.payment_due_date, NULL)')
@@ -214,7 +205,7 @@ class GetRepaymentReportDetailsAction
             })->orderByDesc('loans.id');
 
         if ($this->loanProductId) {
-            $query->where('loan_product_id', $this->loanProductId);
+            $query->where('Loan_Product_ID', $this->loanProductId);
         }
 
         if ($this->startDate && $this->endDate) {

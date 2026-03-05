@@ -25,8 +25,9 @@ class GetOutstandingLoanReportDetailsAction
     {
         $query = Loan::query()
             ->with('customer')
-            ->where('partner_id', $this->partnerId)
-            ->whereDate('Credit_Account_Date', '<=', $this->endDate)
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })->whereDate('Credit_Account_Date', '<=', $this->endDate)
             ->whereIn('Credit_Account_Status', $this->getIncludedAccountStatuses())
             ->withSum('schedule', 'total_outstanding')
             ->addSelect([
@@ -107,7 +108,7 @@ class GetOutstandingLoanReportDetailsAction
 
 
         if ($this->loanProductId) {
-            $query->where('loan_product_id', $this->loanProductId);
+            $query->where('Loan_Product_ID', $this->loanProductId);
         }
 
         if ($this->perPage > 0) {

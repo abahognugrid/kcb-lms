@@ -11,7 +11,7 @@ class GetDisbursementReportDetailsAction
     protected string $startDate = '';
     protected string $endDate = '';
     protected int $perPage = 0;
-    public ?int $loanProductId = null;
+    public ?int $loanProductId;
     protected ?int $partnerId;
 
     public function execute()
@@ -19,7 +19,9 @@ class GetDisbursementReportDetailsAction
         $query = Loan::query()
             ->has('disbursement')
             ->with(['customer', 'loan_product'])
-            ->where('partner_id', $this->partnerId)
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })
             ->when($this->loanProductId, function ($query) {
                 $query->where('Loan_Product_ID', $this->loanProductId);
             })

@@ -2,19 +2,16 @@
 
 namespace App\Actions\Reports;
 
-use App\Models\Loan;
 use Illuminate\Support\Arr;
-use App\Models\JournalEntry;
 use Illuminate\Support\Carbon;
 use App\Models\LoanApplication;
-use App\Models\LoanDisbursement;
 
 class GetLoanApplicationReportDetailsAction
 {
     protected string $startDate = '';
     protected string $endDate = '';
     protected int $perPage = 0;
-    protected ?int $loanProductId = null;
+    protected ?int $loanProductId;
     protected ?int $partnerId;
 
     public function execute()
@@ -22,9 +19,11 @@ class GetLoanApplicationReportDetailsAction
         $query = LoanApplication::query()
             ->with(['customer', 'loan_product'])
             ->has('transaction')
-            ->where('partner_id', $this->partnerId)
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })
             ->when($this->loanProductId, function ($query) {
-                $query->where('loan_product_id', $this->loanProductId);
+                $query->where('Loan_Product_ID', $this->loanProductId);
             })
             ->when($this->startDate && $this->endDate, function ($query) {
                 $query->whereBetween('Credit_Application_Date', [

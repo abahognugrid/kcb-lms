@@ -27,8 +27,9 @@ class GetPortfolioAtRiskReportDetailsAction
     public function execute(): \Illuminate\Database\Eloquent\Collection|\Illuminate\Contracts\Pagination\LengthAwarePaginator
     {
         $query = Loan::query()
-            ->where('partner_id', $this->partnerId)
-            ->whereNotIn('Credit_Account_Status', [
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })->whereNotIn('Credit_Account_Status', [
                 Loan::ACCOUNT_STATUS_WRITTEN_OFF,
                 Loan::ACCOUNT_STATUS_FULLY_PAID_OFF,
             ])->whereRelation('schedule', function ($query) {
@@ -40,7 +41,7 @@ class GetPortfolioAtRiskReportDetailsAction
                 });
             })
             ->when($this->loanProductId, function ($query) {
-                $query->where('loan_product_id', $this->loanProductId);
+                $query->where('Loan_Product_ID', $this->loanProductId);
             });
 
         $query->with('customer')

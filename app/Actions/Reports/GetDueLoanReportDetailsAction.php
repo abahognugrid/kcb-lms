@@ -19,8 +19,9 @@ class GetDueLoanReportDetailsAction
     public function execute()
     {
         $query = Loan::query()->with(['customer'])
-            ->where('partner_id', $this->partnerId)
-            ->when($this->loanProductId, function ($query) {
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })->when($this->loanProductId, function ($query) {
                 return $query->where('Loan_Product_ID', $this->loanProductId);
             })
             ->whereNotIn('Credit_Account_Status', [
@@ -80,7 +81,7 @@ class GetDueLoanReportDetailsAction
         }
 
         $this->loanProductId = Arr::get($details, 'loanProductId');
-        $this->partnerId = Arr::get($details, 'partnerId', 0);
+        $this->partnerId = Arr::get($details, 'partnerId');
 
         return $this;
     }
