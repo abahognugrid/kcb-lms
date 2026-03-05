@@ -22,7 +22,7 @@ class GetPortfolioAtRiskReportDetailsAction
     protected int $perPage = 0;
 
     protected ?int $loanProductId = null;
-    protected int $partnerId = 0;
+    protected ?int $partnerId;
 
     public function execute(): \Illuminate\Database\Eloquent\Collection|\Illuminate\Contracts\Pagination\LengthAwarePaginator
     {

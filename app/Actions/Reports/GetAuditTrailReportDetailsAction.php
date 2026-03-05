@@ -18,7 +18,7 @@ class GetAuditTrailReportDetailsAction
 
     protected ?string $event = null;
 
-    protected int $partnerId = 0;
+    protected ?int $partnerId;
 
     protected bool $isAdmin = false;
 

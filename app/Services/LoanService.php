@@ -39,6 +39,7 @@ class LoanService
 
             $response = self::disburse($customer->Telephone_Number, $amount, $transaction->TXN_ID);
             $responseStatus = Arr::get($response, 'TXNSTATUS');
+            $responseStatus = (int) $responseStatus;
 
             $updateDetails = [
                 'Provider_TXN_ID' => Arr::get($response, 'TXNID'),
@@ -100,6 +101,8 @@ class LoanService
             $repayment->Transaction_ID = $transaction->id;
             $repayment->save();
             $repayment->saveJournalEntries($transaction->id);
+            $message = 'Thank you for paying UGX ' . number_format($transaction->Amount) . ' to ' . $transaction->partner->Institution_Name . '. Your payment has been received successfully.';
+            $transaction->customer->notify(new SmsNotification($message, $transaction->Telephone_Number, $transaction->customer->id, $partner->id, $partner->smsPrice(), $partner->smsCost()));
             $repayment->updateLoanStatus();
             DB::commit();
         } catch (\Exception $e) {

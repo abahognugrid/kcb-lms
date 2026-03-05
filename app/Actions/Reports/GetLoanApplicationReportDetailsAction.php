@@ -15,7 +15,7 @@ class GetLoanApplicationReportDetailsAction
     protected string $endDate = '';
     protected int $perPage = 0;
     protected ?int $loanProductId = null;
-    protected int $partnerId = 0;
+    protected ?int $partnerId;
 
     public function execute()
     {

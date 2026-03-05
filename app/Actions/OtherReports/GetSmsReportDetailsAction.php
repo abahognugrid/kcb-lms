@@ -13,7 +13,7 @@ class GetSmsReportDetailsAction
 {
     protected string $startDate = '';
     protected string $endDate = '';
-    protected int $partnerId = 0;
+    protected ?int $partnerId;
     protected int $perPage = 0;
 
     public function execute(): \Illuminate\Database\Eloquent\Collection|\Illuminate\Contracts\Pagination\LengthAwarePaginator

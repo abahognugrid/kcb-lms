@@ -19,7 +19,7 @@ class GetOutstandingLoanReportDetailsAction
     protected int $perPage = 0;
     protected bool $includeWrittenOffLoans = false;
     public ?int $loanProductId = null;
-    protected int $partnerId = 0;
+    protected ?int $partnerId;
 
     public function execute()
     {

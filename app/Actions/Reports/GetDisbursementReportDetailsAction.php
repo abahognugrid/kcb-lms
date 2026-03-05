@@ -12,7 +12,7 @@ class GetDisbursementReportDetailsAction
     protected string $endDate = '';
     protected int $perPage = 0;
     public ?int $loanProductId = null;
-    protected int $partnerId = 0;
+    protected ?int $partnerId;
 
     public function execute()
     {

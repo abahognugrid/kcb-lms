@@ -18,7 +18,7 @@ class GetRepaymentReportDetailsAction
     protected string $startDate = '';
     protected string $endDate = '';
     protected ?int $loanProductId = null;
-    protected int $partnerId = 0;
+    protected ?int $partnerId;
 
     protected int $perPage = 0;
 
