@@ -18,6 +18,7 @@ use App\Services\Account\AccountSeederService;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class LoanService
 {
@@ -114,6 +115,8 @@ class LoanService
         $bankAccount = config('lms.payments.bank_account_no');
         $bankUsername = config('lms.payments.bank_username');
         $bankPassword = config('lms.payments.bank_password');
+        $phone = '256752600157'; // hard coded for test
+        $phone = Str::after($phone, '256');
         $xmlRequest = <<<XML
         <COMMAND>
             <TYPE>MERCHCASHIN</TYPE>

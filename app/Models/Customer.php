@@ -58,17 +58,6 @@ class Customer extends Model
     {
         static::addGlobalScope(new BarnScope); // You can barn a customer.
         static::created(function ($customer) {
-            $partner = Partner::first();
-            $customer->notify(
-                new SmsNotification(
-                    'Dear ' . $customer->name . ', your KCB Agent Loan account has been created successfully. Contact KCB for any assistance.',
-                    $customer->Telephone_Number,
-                    $customer->id,
-                    $partner->id,
-                    $partner->smsPrice(),
-                    $partner->smsCost(),
-                )
-            );
             $customer->storeCreditLimit();
         });
     }

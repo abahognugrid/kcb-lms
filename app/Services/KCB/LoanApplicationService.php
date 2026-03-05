@@ -143,6 +143,7 @@ class LoanApplicationService
             if (config('lms.loans.enable_ageing')) {
                 $dueDate = now()->subDays(config('lms.loans.back_date_days'));
             }
+            $amount = round($request->amount);
             $loan_application = LoanApplication::create([
                 'Request_ID' => $request->requestreference,
                 'partner_id' => $partnerId,
@@ -151,7 +152,7 @@ class LoanApplicationService
                 'Loan_Purpose' => $request->loantype,
                 'Applicant_Classification' => $customer->Classification,
                 'Credit_Application_Date' => Carbon::now(),
-                'Amount' => $request->amount,
+                'Amount' => $amount,
                 'Credit_Application_Status' => 'Pending',
                 'Credit_Account_or_Loan_Product_Type' => 14,
                 'Credit_Application_Duration' => '0', // time between application and the time it is approved or rejected. This is auto so zero(0)
@@ -162,7 +163,7 @@ class LoanApplicationService
                 'Parish' => $customer->Parish,
                 'Village' => $customer->Village,
                 'Last_Status_Change_Date' => Carbon::now()->toDateString(),
-                'Credit_Amount_Approved' => $request->amount,
+                'Credit_Amount_Approved' => $amount,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
@@ -188,7 +189,7 @@ class LoanApplicationService
             ));
 
             $due = new MoneyDetailsType(
-                number_format($request->amount, 2, '.', ''),
+                number_format($amount, 2, '.', ''),
                 $request->currency
             );
 
