@@ -11,6 +11,7 @@ use App\Models\KCB\CustomerRegistrationResponse;
 use App\Models\Partner;
 use App\Models\SavingsProduct;
 use App\Notifications\SmsNotification;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -21,6 +22,16 @@ class CustomerRegistrationService
         DB::beginTransaction();
 
         try {
+            $idType = $request->idtype;
+            $idNumber = $request->idnumber;
+
+            if ($idType != 'NID') {
+                throw new Exception('ID Type must be set to NID');
+            }
+
+            if (!preg_match('/^(CF|CM)[A-Za-z0-9]{12}$/', $idNumber)) {
+                throw new Exception('ID Number must start with CF or CM, contain only letters and numbers, and be exactly 14 characters long');
+            }
             // Map the Airtel API fields to your database fields
             $customerData = $this->mapToCustomerModel($request);
 
@@ -165,6 +176,8 @@ class CustomerRegistrationService
         $date = \DateTime::createFromFormat('d/m/Y', $dateString);
         if ($date) {
             return $date->format('Y-m-d');
+        } else {
+            return '';
         }
 
         throw new \Exception('Invalid date format. Expected dd/mm/yyyy');
