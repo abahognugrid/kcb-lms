@@ -60,33 +60,14 @@ return [
 
     'stack' => [
       'driver' => 'stack',
-      'channels' => env('APP_ENV') == 'Production' ? ['single', 'slack'] : ['single'],
+      'channels' => ['daily'],  // only daily logs
       'ignore_exceptions' => false,
-      'days' => 7, // Keep logs for 7 days
-    ],
-
-    'single' => [
-      'driver' => 'single',
-      'path' => storage_path('logs/laravel.log'),
-      'level' => env('LOG_LEVEL', 'debug'),
-      'replace_placeholders' => true,
-      'days' => 7, // Keep logs for 7 days
     ],
 
     'daily' => [
       'driver' => 'daily',
       'path' => storage_path('logs/laravel.log'),
       'level' => env('LOG_LEVEL', 'debug'),
-      'days' => env('LOG_DAILY_DAYS', 7),
-      'replace_placeholders' => true,
-    ],
-
-    'slack' => [
-      'driver' => 'slack',
-      'url' => env('LOG_SLACK_WEBHOOK_URL'),
-      'username' => env('LOG_SLACK_USERNAME', 'Laravel Log'),
-      'emoji' => env('LOG_SLACK_EMOJI', ':boom:'),
-      'level' => 'critical',
       'replace_placeholders' => true,
     ],
 
