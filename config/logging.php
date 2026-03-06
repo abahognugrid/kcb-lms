@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\DatabaseLoggerFactory;
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
@@ -18,7 +19,7 @@ return [
   |
   */
 
-  'default' => env('LOG_CHANNEL', 'stack'),
+  'default' => env('LOG_CHANNEL', 'database'),
 
   /*
   |--------------------------------------------------------------------------
@@ -57,7 +58,11 @@ return [
       'level' => 'debug',
       'days' => 7, // Keep logs for 7 days
     ],
-
+    'database' => [
+      'driver' => 'custom',
+      'via' => DatabaseLoggerFactory::class,
+      'level' => 'debug', // minimum log level
+    ],
     'stack' => [
       'driver' => 'stack',
       'channels' => ['daily'],  // only daily logs
