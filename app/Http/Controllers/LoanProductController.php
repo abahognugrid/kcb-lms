@@ -188,9 +188,9 @@ class LoanProductController extends Controller
     public function show(Request $request, LoanProduct $loanProduct)
     {
         $apiResponse = $this->getBusinessRules($loanProduct);
-        $rules = $apiResponse['rules'] ?? [];
-        $minimumPrincipal = $apiResponse ? $apiResponse['base_amount']['minimum'] : null;
-        $maximumPrincipal = $apiResponse ? $apiResponse['base_amount']['maximum'] : null;
+        $rules = $apiResponse['rules'];
+        $minimumPrincipal = (int)$apiResponse['base_amount']['minimum'];
+        $maximumPrincipal = (int)$apiResponse['base_amount']['maximum'];
         $loanProduct->load(
             'loan_product_type',
             'loan_product_terms',
@@ -204,9 +204,8 @@ class LoanProductController extends Controller
     private function getBusinessRules(LoanProduct $loanProduct)
     {
         try {
-            $productCode = 'LP-' . $loanProduct->Code;
+            $productCode = $loanProduct->Code;
             $accessToken = $this->getAccessToken();
-            // Step 2: Use the access token to call the Loan Market API
             $apiResponse = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
@@ -225,7 +224,7 @@ class LoanProductController extends Controller
             return [];
         }
     }
-    protected function getAccessToken(): string
+    protected function getAccessToken()
     {
         try {
             $accessToken = Cache::get('api_access_token');
@@ -241,19 +240,17 @@ class LoanProductController extends Controller
                     'client_id' => config('lms.crb.client-id'),
                     'client_secret' => config('lms.crb.client-secret'),
                 ]);
-            Log::info('Token Response: ' . $tokenResponse->body());
 
             if ($tokenResponse->successful()) {
                 $accessToken = $tokenResponse->json()['access_token'];
                 $tokenLifeTime = $tokenResponse->json()['expires_in']; // seconds
                 Cache::put('api_access_token', $accessToken, $tokenLifeTime);
                 return $accessToken;
+            } else {
+                throw new Exception('Failed to get access token: ' . $tokenResponse->body());
             }
-
-            Log::error('Failed to retrieve access token: ' . $tokenResponse->body());
-            throw new Exception('Failed to get access token');
-        } catch (\Exception $exception) {
-            return '';
+        } catch (\Exception $e) {
+            throw new Exception($e->getMessage());
         }
     }
     public function delete(LoanProduct $loanProduct)
