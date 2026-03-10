@@ -269,9 +269,23 @@ class Customer extends Model
             ]);
 
             if ($apiResponse->successful()) {
-                Log::info('API call successful: ' . $apiResponse->body());
+
                 $responseData = $apiResponse->json();
+
+                // Check if API returned an error
+                if (isset($responseData['error'])) {
+                    throw new Exception('Credit API error: ' . $responseData['error']);
+                }
+
                 $creditLimit = data_get($responseData, 'data.Decision.credit_limit');
+
+                // Validate credit limit exists
+                if (is_null($creditLimit)) {
+                    throw new Exception('Credit API error: ' . $responseData['error']);
+                }
+
+                Log::info('API call successful', $responseData);
+
                 $partner = Partner::first();
 
                 CreditLimit::create([
@@ -283,7 +297,9 @@ class Customer extends Model
                     'Created_At' => Carbon::now(),
                     'Updated_At' => Carbon::now(),
                 ]);
+
                 $customer = Customer::find($this->id);
+
                 $customer->notify(
                     new SmsNotification(
                         'Dear ' . $customer->name . ', welcome to KCB Agent Loan. Your credit limit is UGX ' . number_format($creditLimit) . '. You can borrow up to this amount anytime. Contact KCB for assistance.',
@@ -295,12 +311,16 @@ class Customer extends Model
                     )
                 );
             } else {
-                Log::error('API call failed: ' . $apiResponse->body());
+                Log::error('API call failed', [
+                    'status' => $apiResponse->status(),
+                    'body' => $apiResponse->body()
+                ]);
             }
 
             return 0;
         } catch (Exception $e) {
             Log::error('Error caught: ' . $e->getMessage());
+            throw new Exception('Error caught: ' . $e->getMessage());
         }
     }
 }
