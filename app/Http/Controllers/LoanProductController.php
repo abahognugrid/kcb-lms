@@ -204,6 +204,7 @@ class LoanProductController extends Controller
     private function getBusinessRules(LoanProduct $loanProduct)
     {
         try {
+            $productCode = 'LP-' . $loanProduct->Code;
             $accessToken = $this->getAccessToken();
             // Step 2: Use the access token to call the Loan Market API
             $apiResponse = Http::withHeaders([
@@ -212,19 +213,15 @@ class LoanProductController extends Controller
                 'Authorization' => 'Bearer ' . $accessToken,
             ])->post(config('lms.crb.url') . '/v1/loan-market/business-rules', [
                 'partnerCode' => $loanProduct->partner->Identification_Code,
-                'productReference' => $loanProduct->Code,
+                'productReference' => $productCode,
             ]);
-
-            Log::info('Business Rules Response: ' . $apiResponse->body());
-
             if ($apiResponse->successful()) {
                 return $apiResponse->json();
+            } else {
+                throw new Exception('Failed to retrieve business rules: ' . $apiResponse->body());
             }
-
-            Log::error('Failed to retrieve business rules: ' . $apiResponse->body());
-
-            return [];
         } catch (\Exception $e) {
+            Log::error($e->getMessage());
             return [];
         }
     }
