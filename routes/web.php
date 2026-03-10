@@ -26,6 +26,7 @@ use App\Http\Controllers\LoanProductFeesController;
 use App\Http\Controllers\LoanProductPenaltiesController;
 use App\Http\Controllers\LoanProductTermController;
 use App\Http\Controllers\LoanReportsController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\Reports\LoanApplicationReportController;
 use App\Http\Controllers\RolePermissionController;
@@ -315,4 +316,6 @@ Route::middleware(['auth', 'force_password_change', EnforceTwoFactor::class])->g
     Route::resource('labels', LabelController::class)->except(['show', 'create']);
     Route::get('/downloads', [\App\Http\Controllers\DownloadsController::class, 'index'])->name('downloads.index');
     Route::get('/downloads/{notification}/download', [\App\Http\Controllers\DownloadsController::class, 'download'])->name('downloads.download');
+
+    Route::middleware('permission:view logs')->get('/logs', [LogController::class, 'index'])->name('logs.index');
 });

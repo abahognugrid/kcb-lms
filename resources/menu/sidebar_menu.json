@@ -40,7 +40,6 @@
       "url": "/customers",
       "slug": "customers"
     },
-
     {
       "name": "Loans",
       "icon": "menu-icon tf-icons bx bx-xs bx-money",
@@ -73,36 +72,36 @@
           "name": "Loan Applications",
           "slug": "loan-applications-report"
         },
-          {
-              "url": "reports/loans/rejected/applications",
-              "name": "Rejected Applications Report",
-              "slug": "rejected-loans-report"
-          },
-          {
-              "url": "reports/loans/disbursement",
-              "name": "Disbursement Report",
-              "slug": "disbursement-report"
-          },
-          {
-              "url": "reports/loans/pending/disbursement",
-              "name": "Pending Disbursements",
-              "slug": "pending-disbursement-report"
-          },
-          {
-              "url": "/due-loans-report",
-              "name": "Due Report",
-              "slug": "due-loans-report"
-          },
-          {
-              "url": "reports/loans/repayment",
-              "name": "Repayment Report",
-              "slug": "repayment-report"
-          },
-          {
-              "url": "reports/loans/overdue",
-              "name": "Arrears Report",
-              "slug": "overdue-report"
-          },
+        {
+          "url": "reports/loans/rejected/applications",
+          "name": "Rejected Applications Report",
+          "slug": "rejected-loans-report"
+        },
+        {
+          "url": "reports/loans/disbursement",
+          "name": "Disbursement Report",
+          "slug": "disbursement-report"
+        },
+        {
+          "url": "reports/loans/pending/disbursement",
+          "name": "Pending Disbursements",
+          "slug": "pending-disbursement-report"
+        },
+        {
+          "url": "/due-loans-report",
+          "name": "Due Report",
+          "slug": "due-loans-report"
+        },
+        {
+          "url": "reports/loans/repayment",
+          "name": "Repayment Report",
+          "slug": "repayment-report"
+        },
+        {
+          "url": "reports/loans/overdue",
+          "name": "Arrears Report",
+          "slug": "overdue-report"
+        },
         {
           "url": "reports/loans/paidoff",
           "name": "Paid Off Loans",
@@ -113,16 +112,16 @@
           "name": "Outstanding Loans",
           "slug": "outstanding-report"
         },
-          {
-              "url": "reports/loans/arrears-ageing-report",
-              "name": "Ageing Report",
-              "slug": "arrears-aging-report"
-          },
-          {
-              "url": "reports/loans/portfolio-at-risk",
-              "name": "Portfolio At Risk Report",
-              "slug": "portfolio-at-risk-report"
-          },
+        {
+          "url": "reports/loans/arrears-ageing-report",
+          "name": "Ageing Report",
+          "slug": "arrears-aging-report"
+        },
+        {
+          "url": "reports/loans/portfolio-at-risk",
+          "name": "Portfolio At Risk Report",
+          "slug": "portfolio-at-risk-report"
+        },
         {
           "url": "reports/customers/blacklisted",
           "name": "Black Listed Report",
@@ -193,40 +192,40 @@
           "slug": "daily-report",
           "url": "reports/others/daily-report"
         },
-          {
-              "name": "Transactions",
-              "slug": "transactions",
-              "url": "transactions"
-          },
+        {
+          "name": "Transactions",
+          "slug": "transactions",
+          "url": "transactions"
+        },
         {
           "name": "Performance Metrics",
           "slug": "at-a-glance-report",
           "url": "reports/others/performance-metrics"
         },
         {
-            "url": "reports/financial/general-ledger-summary",
-            "name": "General Ledger Summary",
-            "slug": "general-ledger-summary"
+          "url": "reports/financial/general-ledger-summary",
+          "name": "General Ledger Summary",
+          "slug": "general-ledger-summary"
         },
         {
-            "url": "reports/financial/income-report",
-            "name": "Income Report",
-            "slug": "income-report"
+          "url": "reports/financial/income-report",
+          "name": "Income Report",
+          "slug": "income-report"
         },
         {
-            "url": "reports/financial/general-ledger-statement-break-down",
-            "name": "GL Statement Break Down",
-            "slug": "general-ledger-summary"
+          "url": "reports/financial/general-ledger-statement-break-down",
+          "name": "GL Statement Break Down",
+          "slug": "general-ledger-summary"
         },
         {
-            "name": "Account Ledger",
-            "url": "reports/others/account-ledger",
-            "slug": "daily-report"
+          "name": "Account Ledger",
+          "url": "reports/others/account-ledger",
+          "slug": "daily-report"
         },
         {
-            "name": "External Accounts",
-            "url": "reports/others/external-accounts",
-            "slug": "daily-report"
+          "name": "External Accounts",
+          "url": "reports/others/external-accounts",
+          "slug": "daily-report"
         },
         {
           "name": "Credit Limits",
@@ -267,7 +266,8 @@
           "name": "Dashboard",
           "url": "/ticket-dashboard",
           "slug": "ticket-dashboard"
-        },{
+        },
+        {
           "name": "Tickets",
           "url": "/tickets",
           "slug": "tickets"
@@ -310,9 +310,9 @@
           "url": "sms-campaigns"
         },
         {
-            "name": "SMS Report",
-            "slug": "sms-logs",
-            "url": "reports/sms-report"
+          "name": "SMS Report",
+          "slug": "sms-logs",
+          "url": "reports/sms-report"
         }
       ]
     },
@@ -321,6 +321,12 @@
       "icon": "menu-icon tf-icons bx bx-xs bx-cog",
       "url": "/settings",
       "slug": "partner-settings"
+    },
+    {
+      "name": "System Logs",
+      "icon": "menu-icon tf-icons bx bx-xs bx-cog",
+      "url": "/logs",
+      "slug": "logs"
     }
   ]
 }
