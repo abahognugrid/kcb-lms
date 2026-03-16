@@ -29,8 +29,6 @@ class AfricasTalkingSmsProvider implements SmsProviderInterface
                 'from' => $this->senderId
             ]);
 
-            // dd($response);
-
             return ['success' => true, 'results' => []];
         } catch (\Exception $e) {
             Log::error('AfricasTalking Exception', ['error' => $e->getMessage()]);
@@ -49,8 +47,6 @@ class AfricasTalkingSmsProvider implements SmsProviderInterface
                 'to' => $formattedPhoneNumbers,
                 'message' => $message,
             ]);
-
-            // dd($response);
 
             if (!$response->successful()) {
                 Log::error('EgoSMS Bulk API Error', ['response' => $response->json()]);

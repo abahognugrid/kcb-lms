@@ -65,7 +65,7 @@
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <strong>Interest Cycle</strong>
                     <div>
-                        {{ $loan->loan_term->Interest_Cycle }}
+                        {{ $loan->loan_term?->Interest_Cycle }}
                     </div>
                 </li>
                 {{-- <li class="list-group-item d-flex justify-content-between align-items-center">

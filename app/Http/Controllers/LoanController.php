@@ -80,7 +80,7 @@ class LoanController extends Controller
         CONCAT('lr-', lr.id) AS id,
         lr.\"Transaction_Date\" AS transaction_date,
         COALESCE(SUM(CASE
-            WHEN a.accountable_type = 'App\\\\Models\\\\LoanProduct'
+            WHEN a.accountable_type = 'App\Models\LoanProduct'
                 THEN (COALESCE(je.credit_amount,0) - COALESCE(je.debit_amount,0))
             ELSE 0
         END),0) AS principal_paid,
@@ -101,7 +101,7 @@ class LoanController extends Controller
         END),0) AS fees_paid
     FROM loan_repayments lr
     INNER JOIN journal_entries AS je
-        ON je.transactable_id = lr.id AND transactable = 'App\\\\Models\\\\LoanRepayment'
+        ON je.transactable_id = lr.id AND transactable = 'App\Models\LoanRepayment'
     INNER JOIN accounts a ON a.id = je.account_id
     WHERE 1=1
         AND lr.\"Loan_ID\" = {$loan->id}
@@ -123,7 +123,7 @@ class LoanController extends Controller
         AND EXISTS (
             SELECT 1 FROM journal_entries
             WHERE 1=1
-                AND transactable = 'App\\\\Models\\\\WrittenOffLoanRecovered'
+                AND transactable = 'App\Models\WrittenOffLoanRecovered'
                 AND transactable_id = wol.id
         )
     GROUP BY wol.id, wol.\"Written_Off_Date\"

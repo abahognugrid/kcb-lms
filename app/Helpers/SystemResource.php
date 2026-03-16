@@ -87,7 +87,8 @@ class SystemResource
             "loan-applications-report",
             "ticket-reports",
             'partner-settings',
-            'credit-limits'
+            'credit-limits',
+            'logs',
         ];
     }
 }

@@ -350,7 +350,6 @@ class LoanRepayment extends BaseTransaction implements Transactable
     ): void {
         // Normalize payable type for fees
         $payableType = str_contains($schedule->type, 'Fee') ? 'Fees' : $payable;
-
         $this->processAccounting(
             $schedule->payable_to,
             $payableType,

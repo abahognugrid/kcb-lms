@@ -11,7 +11,7 @@ class GetTransactionsReportDetailsAction
     protected string $startDate = '';
     protected string $endDate = '';
     protected string $transactionStatus = '';
-    protected int $partnerId;
+    protected ?int $partnerId;
     protected int $perPage = 0;
 
     public function execute(): \Illuminate\Database\Eloquent\Collection|\Illuminate\Contracts\Pagination\LengthAwarePaginator
@@ -20,8 +20,9 @@ class GetTransactionsReportDetailsAction
 
         $query = Transaction::query()
             ->with($withRelations)
-            ->where('partner_id', $this->partnerId)
-            ->has('customer')
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })->has('customer')
             ->when($this->transactionStatus, function ($query) {
                 $query->where('Status', $this->transactionStatus);
             })

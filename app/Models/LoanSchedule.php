@@ -274,11 +274,10 @@ class LoanSchedule extends Model
     {
         // Define key parameters from the loan and product
         $principal = $loan->Credit_Amount;
-        $rate = $loan->Interest_Rate / 100; // Convert percentage to decimal
         $loanTerm = $loan->Number_of_Payments ?? $loan->Term;
 
         // Calculate total interest (constant based on the original principal)
-        $interest = $principal * $rate;
+        $interest = $loan->Interest_Rate;
         $totalPayment = $principal + $interest;
 
         // Determine how much should be paid each period (principal + interest)
@@ -297,7 +296,6 @@ class LoanSchedule extends Model
 
         // Initialize an array to hold the schedules
         $schedule = [];
-
         if ($loanTerm == 1) {
             // Principal and interest for this period
             $principalForPeriod = $principal / $loanTerm;
@@ -308,10 +306,11 @@ class LoanSchedule extends Model
                 'principal' => $principalForPeriod,
                 'interest' => $interestForPeriod,
                 'total_payment' => $principalForPeriod + $interestForPeriod,
-                'payment_due_date' => self::calculateDueDate($startDate, 1, $repaymentFrequency),
+                'payment_due_date' => $loan->Maturity_Date,
                 'principal_remaining' => $principalForPeriod,
                 'interest_remaining' => $interestForPeriod,
                 'total_outstanding' => $interestForPeriod + $principalForPeriod,
+                'type' => $type,
             ];
         } else {
             // Generate the schedule
@@ -343,7 +342,6 @@ class LoanSchedule extends Model
                 $totalOutstandingBalance -= $paymentPerPeriod;
             }
         }
-
         // Save the schedule to the database
         LoanSchedule::insert($schedule);
 

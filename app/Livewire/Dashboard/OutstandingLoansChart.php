@@ -71,7 +71,6 @@ class OutstandingLoansChart extends Component
         }
 
         $records = $this->getRecords();
-        //        dd($records);
         // Fill in the actual data
         foreach ($records as $record) {
             if (isset($months[$record->year_month_name])) {

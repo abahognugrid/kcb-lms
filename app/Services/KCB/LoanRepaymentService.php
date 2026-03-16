@@ -36,19 +36,6 @@ class LoanRepaymentService
                     'Customer not found'
                 );
             }
-
-            // Validate phone number matches customer
-            if ($customer->Telephone_Number !== $request->receivingfri) {
-                return new InitiateLoanRepaymentResponse(
-                    null,
-                    null,
-                    null,
-                    null,
-                    'FAILED',
-                    'Phone number does not match customer record'
-                );
-            }
-
             $loanProduct = LoanProduct::where('Code', $request->productid)->first();
             if (!$loanProduct) {
                 return new InitiateLoanRepaymentResponse(

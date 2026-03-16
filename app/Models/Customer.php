@@ -57,9 +57,6 @@ class Customer extends Model
     protected static function booted()
     {
         static::addGlobalScope(new BarnScope); // You can barn a customer.
-        static::created(function ($customer) {
-            $customer->storeCreditLimit();
-        });
     }
 
     public static function rules($customer = null)
@@ -253,7 +250,7 @@ class Customer extends Model
         }
     }
 
-    private function storeCreditLimit()
+    public function storeCreditLimit()
     {
         try {
             $accessToken = $this->getAccessToken();

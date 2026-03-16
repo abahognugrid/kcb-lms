@@ -17,7 +17,8 @@ class InitiateLoanApplicationRequest extends Model
         'callbackurl',
         'serviceproviderid',
         'productid',
-        'message'
+        'message',
+        'due_date'
     ];
 
     public static function fromXml($xmlContent)

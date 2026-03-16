@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
     $this->call(SwitchesTableSeeder::class);
     $this->call(PartnerApiSettingSeeder::class);
     $this->call(LoanProductPenaltiesSeeder::class);
+    $this->call(FloatTopUpSeeder::class);
     $this->call(PartnerOvaSeeder::class);
   }
 }

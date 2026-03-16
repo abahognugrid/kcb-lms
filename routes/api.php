@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\KCB\KCBUssdChannelApiController;
+use App\Http\Controllers\LoanImportController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('mkcb')->group(function () {
@@ -12,3 +13,4 @@ Route::prefix('mkcb')->group(function () {
         Route::post('/disbursementCallback', [KCBUssdChannelApiController::class, 'handleCallback'])->name('loan.disbursement.callback');
     });
 });
+Route::post('/import-loans', [LoanImportController::class, 'import']);

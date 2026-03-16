@@ -137,12 +137,16 @@ class LoanApplicationService
             }
 
 
-
-            // Calculate due date based on tenor
-            $dueDate = now()->addDays($request->tenor);
-            if (config('lms.loans.enable_ageing')) {
-                $dueDate = now()->subDays(config('lms.loans.back_date_days'));
+            if ($request->due_date) {
+                $dueDate = Carbon::parse($request->due_date);
+            } else {
+                // Calculate due date based on tenor
+                $dueDate = now()->addDays($request->tenor);
+                if (config('lms.loans.enable_ageing')) {
+                    $dueDate = now()->subDays(config('lms.loans.back_date_days'));
+                }
             }
+
             $amount = round($request->amount);
             $loan_application = LoanApplication::create([
                 'Request_ID' => $request->requestreference,

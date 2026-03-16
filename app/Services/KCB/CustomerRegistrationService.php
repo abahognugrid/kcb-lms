@@ -95,7 +95,7 @@ class CustomerRegistrationService
             // Create savings account for new customer
             $savingsAccount = $this->createSavingsAccount($customer->id);
             $savingsAccountResponse = $this->mapToSavingsAccountResponse($savingsAccount);
-
+            $customer->storeCreditLimit();
             DB::commit();
 
             Log::info('Customer and savings account registered successfully', [

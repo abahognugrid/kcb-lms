@@ -67,12 +67,7 @@ class LoanApplicationController extends Controller
 
             $loanApplicationSummary = new LoanApplication();
 
-            //dd($application_date);
-
             $loanSummaryDetails = $loanApplicationSummary->generateLoanSummaryDetails($customer, $loan_amount, $loan_purpose, $loan_product_id, $application_date);
-
-            //dd($loanSummaryDetails);
-
             $loanData = $loanSummaryDetails['loanData'];
             $loanRecordDetails = $loanSummaryDetails['loanRecordDetails'];
         } catch (\Throwable $th) {

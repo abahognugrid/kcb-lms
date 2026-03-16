@@ -50,6 +50,16 @@ class LoanProductSeeder extends Seeder
                 'Value' => 14,
                 'Interest_Cycle' => 'None',
             ]);
+
+            LoanProductTerm::create([
+                'partner_id' => $partner->id,
+                'Loan_Product_ID' => $loanProduct->id,
+                'Interest_Rate' => 300,
+                'Interest_Calculation_Method' => 'Flat on Loan Amount',
+                'Repayment_Cycles' => json_encode(['Once']),
+                'Value' => 2,
+                'Interest_Cycle' => 'None',
+            ]);
         }
     }
 }
