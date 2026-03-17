@@ -1,5 +1,5 @@
 ARG platform=linux/amd64
-FROM --platform=${platform} php:8.3-fpm
+FROM --platform=${platform} php:8.4-fpm-bullseye
 
 # Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
