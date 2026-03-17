@@ -8,7 +8,6 @@ use App\Models\LoanProduct;
 use Illuminate\Http\Request;
 use App\Models\LoanProductType;
 use App\Models\Partner;
-use App\Models\Switches;
 use App\Services\Account\AccountSeederService;
 use Exception;
 use Illuminate\Validation\Rule;
@@ -50,15 +49,9 @@ class LoanProductController extends Controller
 
         $payableAccounts = Account::where('partner_id', $user->partner_id)
             ->where('identifier', 'like', AccountSeederService::PAYABLES_IDENTIFIER . '.%')
-            // ->where('position', '>', 2)
             ->get();
 
-        $switches = Switches::where('category', 'Payment')
-            ->where('partner_id', $user->partner_id)
-            ->where('status', 'On')
-            ->get();
-
-        return view('loan-products.create', compact('loan_product_types', 'partners', 'payableAccounts', 'switches'));
+        return view('loan-products.create', compact('loan_product_types', 'partners', 'payableAccounts'));
     }
 
     public function store(Request $request)
@@ -92,7 +85,6 @@ class LoanProductController extends Controller
             'Repayment_Order' => 'nullable|string|max:1000',
             'Arrears_Auto_Write_Off_Days' => 'required|numeric|between:0,99999',
             'Ussd_Code' => 'nullable|string|max:10',
-            'Switch_ID' => 'nullable|integer|exists:switches,id',
             'can_write_off_interest' => 'sometimes|nullable|boolean',
             'can_write_off_penalties' => 'sometimes|nullable|boolean',
             'can_write_off_fees' => 'sometimes|nullable|boolean'
@@ -127,12 +119,8 @@ class LoanProductController extends Controller
         $payableAccounts = Account::query()->where('partner_id', $loanProduct->partner_id)
             ->where('identifier', 'like', AccountSeederService::PAYABLES_IDENTIFIER . '.%')
             ->get();
-        $switches = Switches::query()->where('category', 'Payment')
-            ->where('partner_id', $loanProduct->partner_id)
-            ->where('status', 'On')
-            ->get();
 
-        return view('loan-products.edit', compact('loanProduct', 'loan_product_types', 'partners', 'payableAccounts', 'switches'));
+        return view('loan-products.edit', compact('loanProduct', 'loan_product_types', 'partners', 'payableAccounts'));
     }
 
     public function update(Request $request, LoanProduct $loanProduct)
@@ -167,7 +155,6 @@ class LoanProductController extends Controller
                 'Repayment_Order' => 'nullable|string|max:1000',
                 'Arrears_Auto_Write_Off_Days' => 'required|numeric|between:0,99999',
                 'Ussd_Code' => 'nullable|string|max:10',
-                'Switch_ID' => 'nullable|integer|exists:switches,id',
             ]);
 
             $record['Repayment_Order'] = json_decode($record['Repayment_Order']);

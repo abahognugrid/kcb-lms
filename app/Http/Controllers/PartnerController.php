@@ -50,11 +50,6 @@ class PartnerController extends Controller
         PartnerOva::updateOrCreate([
             "partner_id" => $request->user()->partner_id
         ], $records);
-        // We clear ova settings as they are cached in the Payment Manager.
-
-        $request->user()?->partner?->switches->each(function ($switch) {
-            cache()->forget("ova_settings_{$switch->partner_id}_" . strtolower($switch->name));
-        });
 
         session()->flash("success", "Partner OVA config updated successfully");
 

@@ -265,22 +265,6 @@
                                 to access this loan product. (25670000000, 25670000000, 25670000000)
                             </p>
                         </div>
-
-                        <div class="mb-4">
-                            <label for="Payment_Provider" class="form-label">
-                                Payment Provider
-                            </label>
-                            <select class="form-select" id="Switch_ID" name="Switch_ID">
-                                <option value="">Choose Payment Provider...</option>
-                                @foreach ($switches as $switch)
-                                    <option value="{{ $switch->id }}"
-                                        {{ old('Switch_ID') == $switch->id ? 'selected' : '' }}>
-                                        {{ $switch->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
                         <div class="mb-4">
                             <label for="Arrears_Auto_Write_Off_Days" class="form-label">Automatic write-off
                                 period<x-required /></label>

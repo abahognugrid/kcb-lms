@@ -312,7 +312,6 @@ class LoanApplicationService
                     'settlementFee' => round($settlementFee),
                     'feesStructure' => $feesStructure,
                     'numberOfPayments' => $numberOfPayments,
-                    'paymentSwitchStatus' => $loanProduct->switch?->status,
                 ],
                 'returnMessage' => 'Successfully posted loan application',
                 'loanApplication' => $loan_application,

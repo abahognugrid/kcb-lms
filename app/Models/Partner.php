@@ -67,11 +67,6 @@ class Partner extends Model implements Auditable
         return $code;
     }
 
-    public function switches(): \Illuminate\Database\Eloquent\Relations\HasMany
-    {
-        return $this->hasMany(Switches::class);
-    }
-
     public function users(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(User::class);

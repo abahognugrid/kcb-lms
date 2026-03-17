@@ -15,11 +15,6 @@ class RolePermissionSeeder extends Seeder
         'delete sms-float-top-up',
         'update sms-float-top-up',
 
-        'view switches',
-        'create switches',
-        'update switches',
-        'delete switches',
-
         'view partners',
         'create partners',
         'delete partners',

@@ -21,7 +21,6 @@ class DatabaseSeeder extends Seeder
     $this->call(LoanProductTypeSeeder::class);
     $this->call(LoanProductSeeder::class);
     $this->call(SavingsProductSeeder::class);
-    $this->call(SwitchesTableSeeder::class);
     $this->call(PartnerApiSettingSeeder::class);
     $this->call(LoanProductPenaltiesSeeder::class);
     $this->call(FloatTopUpSeeder::class);

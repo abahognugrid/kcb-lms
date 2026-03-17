@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\SmsLog;
-use App\Models\Switches;
-use App\Services\Sms;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -41,12 +39,10 @@ class SendLoggedSms extends Command
             $count = 0;
             $failures = 0;
             foreach ($messages as $message) {
-                $switch = Switches::where('category', 'SMS')->where('status', 'On')->where('partner_id', $message->partner_id)->first();
-                $senderID = $switch?->sender_id ?? 'ATUpdates';
                 try {
                     $this->info("Processing message ID: {$message->id}");
 
-                    $sent = $this->sendSms($message->Telephone_Number, $message->Message, $senderID);
+                    $sent = $this->sendSms($message->Telephone_Number, $message->Message);
                     if ($sent == true) {
                         $message->update(['Status' => 'Sent']);
                         $count += 1;
@@ -76,20 +72,19 @@ class SendLoggedSms extends Command
         return 0;
     }
 
-    protected function sendSms($phoneNumber, $message, $senderID)
+    protected function sendSms($phoneNumber, $message)
     {
         if (app()->isLocal()) {
-            Log::info('Sms sent to phone: ' . $phoneNumber . ', Content: ' . $message . 'SenderID: ' . $senderID);
+            Log::info('Sms sent to phone: ' . $phoneNumber . ', Content: ' . $message);
             return true;
         }
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/x-www-form-urlencoded',
-            'apiKey' => 'atsk_b7c2e7d96802d6c0eaf881aa8b551298d81144de826465994a942f803bb8fca1d966b266',
-        ])->asForm()->post('https://api.africastalking.com/version1/messaging', [
-            'username' => ('loanmarketsms'),
-            'from' => $senderID,
-            'to' => ($phoneNumber), // Phone number(s)
-            'message' => ($message) // Custom message
+        $response = Http::get(config('sms.kcb.base_url') . '/api/kcb/sendsms', [
+            'action'      => 'sendmessage',
+            'username'    => config('sms.kcb.username'),
+            'password'    => config('sms.kcb.password'),
+            'recipient'   => '256700460055', // change this to $phone
+            'messagetype' => 'SMS:TEXT',
+            'messagedata' => $message,
         ]);
 
         if ($response->successful()) {

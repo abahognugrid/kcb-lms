@@ -13,28 +13,6 @@
       "slug": "partners"
     },
     {
-      "name": "Partner Settings",
-      "icon": "menu-icon tf-icons bx bx-xs bx-message-square-dots",
-      "slug": "switches",
-      "submenu": [
-        {
-          "name": "Switches",
-          "url": "/switches",
-          "slug": "switches"
-        },
-        {
-          "name": "Exclusion Parameters",
-          "slug": "exclusion-parameters",
-          "url": "/exclusion-parameters"
-        },
-        {
-          "name": "Business Rules",
-          "slug": "business-rules",
-          "url": "/business-rules"
-        }
-      ]
-    },
-    {
       "name": "Customers",
       "icon": "menu-icon tf-icons bx bx-xs bx-user",
       "url": "/customers",

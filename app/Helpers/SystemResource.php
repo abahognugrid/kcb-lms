@@ -24,7 +24,6 @@ class SystemResource
             "loan-loss-provisions",
             "tickets",
             "agents",
-            "switches",
             "chart-of-accounts",
             "loan-repayments",
             'exclusion-parameters',

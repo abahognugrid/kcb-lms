@@ -132,13 +132,6 @@ class LoanProduct extends Model implements Accountable, Auditable
         return $this->hasMany(LoanProductPenalties::class, 'Loan_Product_ID', 'id');
     }
 
-    public function switch(): \Illuminate\Database\Eloquent\Relations\BelongsTo
-    {
-        return $this->belongsTo(Switches::class, 'Switch_ID', 'id')
-            ->where('category', 'Payment')
-            ->where('status', 'On');
-    }
-
     public function accountDisplayName(): string
     {
         return $this->Name;

@@ -237,24 +237,6 @@
                             <p class="form-text">Enter comma separated list of phone numbers that are allowed to access
                                 this loan product. (25670000000, 25670000000, 25670000000)</p>
                         </div>
-                        <div class="mb-4">
-                            <label for="Payment_Provider" class="form-label">
-                                <span class="d-block">Payment Provider</span>
-                                <span class="text-secondary d-block" style="white-space: normal;">
-                                    The selected payment provider will be used to handle all transactions of this loan
-                                    product.
-                                </span>
-                            </label>
-                            <select class="form-select" id="Switch_ID" name="Switch_ID">
-                                <option value="">Choose Payment Provider...</option>
-                                @foreach ($switches as $switch)
-                                    <option value="{{ $switch->id }}"
-                                        {{ old('Switch_ID', $loanProduct->Switch_ID) == $switch->id ? 'selected' : '' }}>
-                                        {{ $switch->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
 
                         <div class="mb-4">
                             <label for="ussd-code" class="form-label">USSD Code</label>

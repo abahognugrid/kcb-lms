@@ -33,7 +33,6 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SmsCampaignController;
 use App\Http\Controllers\SmsController;
 use App\Http\Controllers\SmsTemplatesController;
-use App\Http\Controllers\SwitchesController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\TicketReportController;
 use App\Http\Controllers\TransactionController;
@@ -219,34 +218,6 @@ Route::middleware(['auth', 'force_password_change', EnforceTwoFactor::class])->g
         Route::middleware('permission:update sms-templates')->put('/sms-templates/{template}', [SmsTemplatesController::class, 'update'])->name('sms-template.update');
         Route::middleware('permission:delete sms-templates')->delete('/sms-templates/{template}', [SmsTemplatesController::class, 'delete'])->name('sms-template.delete');
     });
-
-    // View Switches Index
-    Route::middleware('permission:view switches')
-        ->get('/switches', [SwitchesController::class, 'index'])
-        ->name('switches.index');
-
-    Route::middleware('permission:create switches')
-        ->get('/switches/create', [SwitchesController::class, 'create'])
-        ->name('switches.create');
-
-    Route::middleware('permission:create switches')
-        ->post('/switches', [SwitchesController::class, 'store'])
-        ->name('switches.store');
-
-    Route::middleware('permission:update switches')
-        ->get('/switches/{switch}/edit', [SwitchesController::class, 'edit'])
-        ->name('switches.edit');
-
-    Route::middleware('permission:update switches')
-        ->put('/switches/{switch}', [SwitchesController::class, 'update'])
-        ->name('switches.update');
-
-    Route::middleware('permission:delete switches')
-        ->delete('/switches/{switch}', [SwitchesController::class, 'destroy'])
-        ->name('switches.destroy');
-    Route::patch('/switches/{switch}/toggle-environment', [SwitchesController::class, 'toggleEnvironment'])->name('switches.toggle-environment');
-    Route::patch('/switches/{switch}/toggle-status', [SwitchesController::class, 'toggleStatus'])->name('switches.toggle-status');
-
     // Loan Reports
     Route::middleware('permission:view loan-report')->group(function () {
         Route::get('/reports/loans/disbursement', [LoanReportsController::class, 'disbursement'])->name('reports.loans.disbursement');
