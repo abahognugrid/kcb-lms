@@ -7,7 +7,7 @@ return [
         'write_off_days' => env('ARREARS_WRITE_OFF_DAYS', 180),
     ],
     'sms' => [
-        'cost' => env('SMS_COST', 13),
+        'cost' => env('SMS_COST', 0),
     ],
     'payments' => [
         'bank_name' => env('BANK_NAME'),

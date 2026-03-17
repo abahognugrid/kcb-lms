@@ -57,11 +57,11 @@ class ImportCustomersAndLoans extends Command
                         'First_Name' => $row->first_name,
                         'Last_Name' => $row->last_name,
                         'Other_Name' => $row->other_name,
-                        'Gender' => $row->gender,
-                        'Date_of_Birth' => $row->date_of_birth,
                         'ID_Type' => $row->id_type,
                         'ID_Number' => $row->id_number,
                         'Classification' => 'Individual',
+                        'Gender' => 'Male',
+                        'Date_of_Birth' => '1990-01-01'
                     ]
                 );
 
@@ -119,10 +119,16 @@ class ImportCustomersAndLoans extends Command
                         'Product_Penalty_ID' => 2,
                     ]);
                 }
+                if ($loan->Maturity_Date < Carbon::now() && !$loan->isCleared()) {
+                    $loan->update([
+                        'Credit_Account_Status' => Loan::ACCOUNT_STATUS_OUTSTANDING_AND_BEYOND_TERMS,
+                        'Last_Status_Change_Date' => now()->format('Y-m-d'),
+                    ]);
+                }
                 DB::commit();
             } catch (Exception $e) {
                 DB::rollback();
-                $this->error($e->getMessage());
+                $this->error($e->getFile());
                 return Command::FAILURE;
             }
         }

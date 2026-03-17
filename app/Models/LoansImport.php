@@ -16,16 +16,10 @@ class LoansImport extends Model
         'first_name',
         'last_name',
         'other_name',
-        'gender',
-        'date_of_birth',
         'id_type',
         'id_number',
-        'loan_application_date',
         'maturity_date',
         'loan_amount',
         'amount_paid',
-        'loan_penalty',
-        'outstanding_amount',
-        'loan_status',
     ];
 }

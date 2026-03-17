@@ -6,8 +6,7 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">
-                Loan Contract: <span class="text-info">{{ $loan->Status }}</span> <span
-                    class="text-success">[{{ $loan->product->type->Name }}]</span>
+                Loan Contract: <span class="text-info">{{ $loan->Status }}</span>
             </h5>
 
             <div class="d-flex justify-content-end">

@@ -154,44 +154,12 @@ class Partner extends Model implements Auditable
 
     public function smsPrice()
     {
-        $switch = Switches::where('category', 'SMS')
-            ->where('status', 'On')
-            ->where('partner_id', $this->id)
-            ->first();
-
-        // If no active SMS switch, return default price
-        if (!$switch) {
-            return $this->sms_price;
-        }
-
-        // If the switch is MTECH, price is 0
-        if ($switch->name === 'MTECH') {
-            return 0;
-        }
-
-        // Otherwise, return default price
         return $this->sms_price;
     }
 
 
     public function smsCost()
     {
-        $switch = Switches::where('category', 'SMS')
-            ->where('status', 'On')
-            ->where('partner_id', $this->id)
-            ->first();
-
-        // If no active SMS switch, return default config cost
-        if (!$switch) {
-            return config('lms.sms.cost');
-        }
-
-        // If the switch is MTECH, price is 0
-        if ($switch->name === 'MTECH') {
-            return 0;
-        }
-
-        // Otherwise, return default config cost
         return config('lms.sms.cost');
     }
 }

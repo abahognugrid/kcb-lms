@@ -138,14 +138,16 @@ class LoanApplicationService
 
 
             if ($request->due_date) {
-                $dueDate = Carbon::parse($request->due_date);
+                $dateOnly = substr($request->due_date, 0, 9);
+                $dueDate = Carbon::parse($dateOnly);
             } else {
                 // Calculate due date based on tenor
-                $dueDate = now()->addDays($request->tenor);
+                $dueDate = Carbon::now()->addDays($request->tenor);
                 if (config('lms.loans.enable_ageing')) {
                     $dueDate = now()->subDays(config('lms.loans.back_date_days'));
                 }
             }
+            $applicationDate = $dueDate->copy()->subDays($request->tenor);
 
             $amount = round($request->amount);
             $loan_application = LoanApplication::create([
@@ -155,7 +157,7 @@ class LoanApplicationService
                 'Loan_Product_ID' => $loanProduct->id,
                 'Loan_Purpose' => $request->loantype,
                 'Applicant_Classification' => $customer->Classification,
-                'Credit_Application_Date' => Carbon::now(),
+                'Credit_Application_Date' => $applicationDate,
                 'Amount' => $amount,
                 'Credit_Application_Status' => 'Pending',
                 'Credit_Account_or_Loan_Product_Type' => 14,

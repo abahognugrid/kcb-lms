@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(SmsProviderInterface::class, Sms\Providers\AfricasTalkingSmsProvider::class);
+        $this->app->bind(SmsProviderInterface::class);
     }
 
     /**

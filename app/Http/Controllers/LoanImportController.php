@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\LoansImport;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class LoanImportController extends Controller
 {
@@ -47,17 +46,11 @@ class LoanImportController extends Controller
                 'first_name' => $data[1],
                 'last_name' => $data[2],
                 'other_name' => $data[3],
-                'gender' => $data[4],
-                'date_of_birth' => $data[5],
-                'id_type' => $data[6],
-                'id_number' => $data[7],
-                'loan_application_date' => $data[8],
-                'maturity_date' => $data[9],
-                'loan_amount' => $data[10],
-                'amount_paid' => $data[11],
-                'loan_penalty' => $data[12],
-                'outstanding_amount' => $data[13],
-                'loan_status' => $data[14],
+                'id_type' => $data[4],
+                'id_number' => $data[5],
+                'maturity_date' => $data[6],
+                'loan_amount' => $data[7],
+                'amount_paid' => $data[8],
                 'created_at' => now(),
                 'updated_at' => now(),
             ];
