@@ -25,6 +25,9 @@ class Sms
 
     public function sendSms($phone, $message): bool
     {
+        if (app()->isLocal()) {
+            return true;
+        }
         try {
             $response = Http::get(config('sms.kcb.base_url') . '/api/kcb/sendsms', [
                 'action'      => 'sendmessage',

@@ -20,6 +20,6 @@ class LoansImport extends Model
         'id_number',
         'maturity_date',
         'loan_amount',
-        'amount_paid',
+        'outstanding_amount',
     ];
 }

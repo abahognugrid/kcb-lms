@@ -27,7 +27,7 @@ class LoanProductPenaltiesSeeder extends Seeder
             'Name' => 'Old Late Penalty',
             'partner_id' => 1,
             'Calculation_Method' => 'Flat',
-            'Value' => 30000,
+            'Value' => 3000,
             'Applicable_On' => 'Total Outstanding Balance',
             'Description' => 'Late Penalty',
             'Loan_Product_ID' => LoanProduct::first()->id,

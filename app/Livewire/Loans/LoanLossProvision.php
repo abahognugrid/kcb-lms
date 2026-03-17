@@ -234,13 +234,13 @@ class LoanLossProvision extends Component
             ->whereDate('payment_due_date', '<', now())
             ->whereRelation('loan', function ($query) {
                 $query->where('partner_id', auth()->user()->partner_id)
-                    ->where('loan_product_id', $this->loanProductId)
+                    ->where('Loan_Product_ID', $this->loanProductId)
                     ->whereNotIn('Credit_Account_Status', [
                         LoanAccountType::WrittenOff,
                         LoanAccountType::PaidOff
                     ]);
             })
-            ->selectRaw('IFNULL(SUM(principal_remaining), 0) as arrears_amount, IFNULL(SUM(interest_remaining), 0) as suspended_interest')
+            ->selectRaw('COALESCE(SUM(principal_remaining), 0) as arrears_amount, COALESCE(SUM(interest_remaining), 0) as suspended_interest')
             ->where('principal_remaining', '>', 0);
 
         if ($this->maximum_days === 0) {

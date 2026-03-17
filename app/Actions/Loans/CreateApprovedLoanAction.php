@@ -33,7 +33,7 @@ class CreateApprovedLoanAction
                 'Loan_Application_ID' => $transaction->Loan_Application_ID,
                 'Credit_Application_Status' => LoanApplicationStatus::Approved->name, // You can dynamically adjust this based on approval logic
                 'Credit_Account_Reference' => Loan::generateReference(),
-                'Credit_Account_Date' => Carbon::now(),
+                'Credit_Account_Date' => $transaction->loanApplication->Credit_Application_Date,
                 'Credit_Amount' => $transaction->loanApplication->Amount,
                 'Facility_Amount_Granted' => $transaction->loanApplication->Amount,
                 'Credit_Amount_Drawdown' => '0.00', // Confirm this @Najja

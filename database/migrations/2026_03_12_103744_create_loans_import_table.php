@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->string('maturity_date')->nullable();
             $table->string('loan_amount')->nullable();
-            $table->string('amount_paid')->nullable();
+            $table->string('outstanding_amount')->nullable();
 
             $table->timestamps();
         });

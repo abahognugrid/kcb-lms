@@ -1,0 +1,111 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+class LoanLossProvisionSeeder extends Seeder
+{
+    public function run(): void
+    {
+        DB::table('loan_loss_provisions')->insert([
+            [
+                'id' => 1,
+                'partner_id' => 1,
+                'loan_product_id' => 1,
+                'ageing_category' => 'Normal',
+                'provision_rate' => 0,
+                'provision_amount' => 0,
+                'ageing_category_slug' => 'normal',
+                'minimum_days' => 0,
+                'maximum_days' => 37,
+                'created_by' => 2,
+                'approved_at' => Carbon::parse('2026-03-17 14:57'),
+                'approved_by' => 2,
+                'arrears_amount' => 0,
+                'suspended_interest' => 0,
+                'batch_number' => 1,
+                'created_at' => Carbon::parse('2026-03-17 14:54'),
+                'updated_at' => Carbon::parse('2026-03-17 14:57'),
+            ],
+            [
+                'id' => 2,
+                'partner_id' => 1,
+                'loan_product_id' => 1,
+                'ageing_category' => 'Watch',
+                'provision_rate' => 0,
+                'provision_amount' => 0,
+                'ageing_category_slug' => 'watch',
+                'minimum_days' => 38,
+                'maximum_days' => 59,
+                'created_by' => 2,
+                'approved_at' => Carbon::parse('2026-03-17 14:57'),
+                'approved_by' => 2,
+                'arrears_amount' => 0,
+                'suspended_interest' => 0,
+                'batch_number' => 1,
+                'created_at' => Carbon::parse('2026-03-17 14:55'),
+                'updated_at' => Carbon::parse('2026-03-17 14:57'),
+            ],
+            [
+                'id' => 3,
+                'partner_id' => 1,
+                'loan_product_id' => 1,
+                'ageing_category' => 'Substandard',
+                'provision_rate' => 20,
+                'provision_amount' => 0,
+                'ageing_category_slug' => 'substandard',
+                'minimum_days' => 60,
+                'maximum_days' => 89,
+                'created_by' => 2,
+                'approved_at' => Carbon::parse('2026-03-17 14:57'),
+                'approved_by' => 2,
+                'arrears_amount' => 0,
+                'suspended_interest' => 0,
+                'batch_number' => 1,
+                'created_at' => Carbon::parse('2026-03-17 14:55'),
+                'updated_at' => Carbon::parse('2026-03-17 14:57'),
+            ],
+            [
+                'id' => 4,
+                'partner_id' => 1,
+                'loan_product_id' => 1,
+                'ageing_category' => 'Doubtful',
+                'provision_rate' => 50,
+                'provision_amount' => 0,
+                'ageing_category_slug' => 'doubtful',
+                'minimum_days' => 90,
+                'maximum_days' => 119,
+                'created_by' => 2,
+                'approved_at' => Carbon::parse('2026-03-17 14:57'),
+                'approved_by' => 2,
+                'arrears_amount' => 0,
+                'suspended_interest' => 0,
+                'batch_number' => 1,
+                'created_at' => Carbon::parse('2026-03-17 14:56'),
+                'updated_at' => Carbon::parse('2026-03-17 14:57'),
+            ],
+            [
+                'id' => 5,
+                'partner_id' => 1,
+                'loan_product_id' => 1,
+                'ageing_category' => 'Loss',
+                'provision_rate' => 100,
+                'provision_amount' => 0,
+                'ageing_category_slug' => 'loss',
+                'minimum_days' => 120,
+                'maximum_days' => 179,
+                'created_by' => 2,
+                'approved_at' => Carbon::parse('2026-03-17 14:57'),
+                'approved_by' => 2,
+                'arrears_amount' => 0,
+                'suspended_interest' => 0,
+                'batch_number' => 1,
+                'created_at' => Carbon::parse('2026-03-17 14:57'),
+                'updated_at' => Carbon::parse('2026-03-17 14:57'),
+            ],
+        ]);
+    }
+}

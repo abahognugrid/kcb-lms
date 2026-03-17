@@ -33,7 +33,7 @@ class LoanDatatable extends DataTableComponent
     public function configure(): void
     {
         $this->setPrimaryKey('id')
-            ->setTableRowUrl(fn ($row) => route('loan-accounts.show', $row))
+            ->setTableRowUrl(fn($row) => route('loan-accounts.show', $row))
             ->setPerPage(50);
     }
 
@@ -45,32 +45,26 @@ class LoanDatatable extends DataTableComponent
             Column::make('First Name', 'customer.First_Name')->searchable(),
             Column::make('Last Name', 'customer.Last_Name')->searchable(),
             Column::make('Phone Number', 'customer.Telephone_Number')->searchable(),
-            // Column::make("Credit Status", "Credit_Application_Status")->sortable(),
-            Column::make('Account #', 'Credit_Account_Reference')->searchable(),
-            Column::make('Disbursement Date', 'Credit_Account_Date')->searchable(),
             Column::make('Account Status', 'Credit_Account_Status')
                 ->format(function ($value) {
                     return LoanAccountType::formattedName($value);
                 })
                 ->sortable(),
-            Column::make('Purpose', 'loan_application.Loan_Purpose')
-                ->sortable()
-                ->searchable(),
             Column::make('Maturity Date', 'Maturity_Date')
                 ->label(function ($record) {
-                    return '<div class="text-end">'.\Carbon\Carbon::parse($record->Maturity_Date)->format('Y-m-d').'</div>';
+                    return '<div class="text-end">' . \Carbon\Carbon::parse($record->Maturity_Date)->format('Y-m-d') . '</div>';
                 })
                 ->html()
                 ->sortable(),
             Column::make('Amount Granted', 'Facility_Amount_Granted')
                 ->label(function ($record) {
-                    return '<div class="text-end">'.number_format($record->Facility_Amount_Granted, 2).'</div>';
+                    return '<div class="text-end">' . number_format($record->Facility_Amount_Granted, 2) . '</div>';
                 })
                 ->html()
                 ->sortable(),
             Column::make('Interest', 'Credit_Amount')
                 ->label(function ($record) {
-                    return '<div class="text-end">'.number_format($record->totalInterest(), 2).'</div>';
+                    return '<div class="text-end">' . number_format($record->totalInterest(), 2) . '</div>';
                 })
                 ->html()
                 ->sortable(),
@@ -80,8 +74,8 @@ class LoanDatatable extends DataTableComponent
                 })
                 ->sortable(),
             LinkColumn::make('Actions')
-                ->title(fn ($row) => 'View')
-                ->location(fn ($row) => route('loan-accounts.show', $row)),
+                ->title(fn($row) => 'View')
+                ->location(fn($row) => route('loan-accounts.show', $row)),
         ];
     }
 }

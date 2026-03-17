@@ -50,7 +50,7 @@ class LoanImportController extends Controller
                 'id_number' => $data[5],
                 'maturity_date' => $data[6],
                 'loan_amount' => $data[7],
-                'amount_paid' => $data[8],
+                'outstanding_amount' => $data[8],
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

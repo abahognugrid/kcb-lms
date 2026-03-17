@@ -95,11 +95,14 @@ class ImportCustomersAndLoans extends Command
                 // Get Loan
                 $loan = Loan::where('Customer_ID', $customer->id)->first();
 
-                if ($row->amount_paid) {
+                $totalExpected = $row->loan_amount + 3300;
+                $amountPaid = $totalExpected - $row->outstanding_amount;
+
+                if ($amountPaid > 0) {
                     $repaymentRequest = new InitiateLoanRepaymentRequest();
                     $repaymentRequest->requestreference = Str::random(15);
                     $repaymentRequest->accountholderid = $row->telephone_number;
-                    $repaymentRequest->amount = $row->amount_paid;
+                    $repaymentRequest->amount = $amountPaid;
                     $repaymentRequest->productid = 'AG_SNL';
                     $loanRepaymentService = new LoanRepaymentService();
                     $response = $loanRepaymentService->initiateLoanRepayment($repaymentRequest);
@@ -107,28 +110,26 @@ class ImportCustomersAndLoans extends Command
                         throw new Exception($response->message);
                     }
                 }
-                if ($row->loan_penalty) {
-                    LoanPenalty::firstOrCreate([
-                        'Loan_ID' => $loan->id,
-                        'Customer_ID' => $loan->Customer_ID,
-                        'date' => \Carbon\Carbon::parse($loan->Maturity_Date)->addDays(2),
-                    ], [
-                        'partner_id' => $loan->partner_id,
-                        'Amount' => 0,
-                        'Amount_To_Pay' => 3000,
-                        'Product_Penalty_ID' => 2,
-                    ]);
-                }
-                if ($loan->Maturity_Date < Carbon::now() && !$loan->isCleared()) {
-                    $loan->update([
-                        'Credit_Account_Status' => Loan::ACCOUNT_STATUS_OUTSTANDING_AND_BEYOND_TERMS,
-                        'Last_Status_Change_Date' => now()->format('Y-m-d'),
-                    ]);
-                }
+                LoanPenalty::firstOrCreate([
+                    'Loan_ID' => $loan->id,
+                    'Customer_ID' => $loan->Customer_ID,
+                    'date' => \Carbon\Carbon::parse($loan->Maturity_Date)->addDays(2),
+                ], [
+                    'partner_id' => $loan->partner_id,
+                    'Amount' => 0,
+                    'Amount_To_Pay' => 3000,
+                    'Product_Penalty_ID' => 2,
+                ]);
+
+                $loan->update([
+                    'Credit_Account_Status' => Loan::ACCOUNT_STATUS_OUTSTANDING_AND_BEYOND_TERMS,
+                    'Last_Status_Change_Date' => now()->format('Y-m-d'),
+                ]);
+
                 DB::commit();
             } catch (Exception $e) {
                 DB::rollback();
-                $this->error($e->getFile());
+                $this->error($e->getMessage());
                 return Command::FAILURE;
             }
         }
