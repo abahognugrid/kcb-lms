@@ -94,9 +94,17 @@ class ImportCustomersAndLoans extends Command
                 }
                 // Get Loan
                 $loan = Loan::where('Customer_ID', $customer->id)->first();
-
-                $totalExpected = $row->loan_amount + 3300;
-                $amountPaid = $totalExpected - $row->outstanding_amount;
+                LoanPenalty::firstOrCreate([
+                    'Loan_ID' => $loan->id,
+                    'Customer_ID' => $loan->Customer_ID,
+                    'date' => \Carbon\Carbon::parse($loan->Maturity_Date)->addDays(2),
+                ], [
+                    'partner_id' => $loan->partner_id,
+                    'Amount' => 0,
+                    'Amount_To_Pay' => 3000,
+                    'Product_Penalty_ID' => 2,
+                ]);
+                $amountPaid = $loan->totalOutstandingBalance() - $row->outstanding_amount;
 
                 if ($amountPaid > 0) {
                     $repaymentRequest = new InitiateLoanRepaymentRequest();
@@ -110,16 +118,7 @@ class ImportCustomersAndLoans extends Command
                         throw new Exception($response->message);
                     }
                 }
-                LoanPenalty::firstOrCreate([
-                    'Loan_ID' => $loan->id,
-                    'Customer_ID' => $loan->Customer_ID,
-                    'date' => \Carbon\Carbon::parse($loan->Maturity_Date)->addDays(2),
-                ], [
-                    'partner_id' => $loan->partner_id,
-                    'Amount' => 0,
-                    'Amount_To_Pay' => 3000,
-                    'Product_Penalty_ID' => 2,
-                ]);
+
 
                 $loan->update([
                     'Credit_Account_Status' => Loan::ACCOUNT_STATUS_OUTSTANDING_AND_BEYOND_TERMS,

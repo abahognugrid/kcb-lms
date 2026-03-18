@@ -95,15 +95,15 @@ class LoanService
 
             if ($loan->isWrittenOff()) {
                 self::recoverWrittenOffLoan($transaction, $loan);
+            } else {
+                $repayment = LoanRepayment::createPayment($loan, $transaction->Amount);
+                $repayment->Transaction_ID = $transaction->id;
+                $repayment->save();
+                $repayment->saveJournalEntries($transaction->id);
+                $repayment->updateLoanStatus();
             }
-
-            $repayment = LoanRepayment::createPayment($loan, $transaction->Amount);
-            $repayment->Transaction_ID = $transaction->id;
-            $repayment->save();
-            $repayment->saveJournalEntries($transaction->id);
             $message = 'Thank you for paying UGX ' . number_format($transaction->Amount) . ' to ' . $transaction->partner->Institution_Name . '. Your payment has been received successfully.';
             $transaction->customer->notify(new SmsNotification($message, $transaction->Telephone_Number, $transaction->customer->id, $partner->id, $partner->smsPrice(), $partner->smsCost()));
-            $repayment->updateLoanStatus();
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
@@ -161,7 +161,7 @@ class LoanService
         }
     }
 
-    protected function recoverWrittenOffLoan(Transaction $transaction, Loan $loan): bool
+    protected static function recoverWrittenOffLoan(Transaction $transaction, Loan $loan): bool
     {
         $transaction->loadMissing(['loan', 'customer']);
         $collectionAccount = Account::query()
@@ -188,7 +188,7 @@ class LoanService
 
         $loan->update([
             'Written_Off_Amount_Recovered' => $loan->write_offs()->where('Is_Recovered', 1)
-                ->sum('amount_written_off'),
+                ->sum('Amount_Written_Off'),
             'Last_Recovered_At' => now()
         ]);
 

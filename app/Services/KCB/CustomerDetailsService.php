@@ -71,7 +71,7 @@ class CustomerDetailsService
         $loanAccounts = [];
         foreach ($loans as $loan) {
             $due = new MoneyDetailsType(
-                number_format($loan->totalOutstandingBalance(), 2, '.', ''),
+                number_format($loan->totalOutstandingBalanceExcludingWriteOffs(), 2, '.', ''),
                 'UGX'
             );
             $loanAccounts[] = new LoanAccount(

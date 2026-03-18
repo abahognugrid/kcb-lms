@@ -123,16 +123,15 @@ class LoanApplicationService
             }
 
             // Check if customer has existing pending or active loans
-            $existingLoans = Loan::where('Customer_ID', $customer->id)
-                ->where('partner_id', $partnerId)
-                ->whereIn('Credit_Account_Status', [Loan::ACCOUNT_STATUS_OUTSTANDING_AND_BEYOND_TERMS, Loan::ACCOUNT_STATUS_CURRENT_AND_WITHIN_TERMS]) // Beyond terms / Active
-                ->count();
+            $existingLoan = Loan::where('Customer_ID', $customer->id)
+                ->whereNot('Credit_Account_Status', [Loan::ACCOUNT_STATUS_FULLY_PAID_OFF]) // Beyond terms / Active
+                ->first();
 
-            if ($existingLoans > 0) {
+            if ($existingLoan) {
                 return new InitiateLoanApplicationResponse(
                     null,
                     'FAILED',
-                    'Customer has existing pending or active loans'
+                    'You already have an unpaid loan of UGX ' . number_format($existingLoan->totalOutstandingBalanceExcludingWriteOffs())
                 );
             }
 

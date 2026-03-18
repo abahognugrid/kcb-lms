@@ -44,6 +44,7 @@ class Loan extends Model
 
     const API_STATUS_APPROVED = 'APPROVED';
     const API_STATUS_LIQ = 'LIQ';
+    const API_STATUS_WRITTEN_OFF = 'WRITTEN_OFF';
 
     const SUPPORTED_Credit_Account_Statuses = [
         self::ACCOUNT_STATUS_FULLY_PAID_OFF => 'Fully Paid',
@@ -1322,6 +1323,7 @@ class Loan extends Model
             self::ACCOUNT_STATUS_CURRENT_AND_WITHIN_TERMS => self::API_STATUS_APPROVED,
             self::ACCOUNT_STATUS_FULLY_PAID_OFF => self::API_STATUS_LIQ,
             self::ACCOUNT_STATUS_OUTSTANDING_AND_BEYOND_TERMS => self::API_STATUS_APPROVED,
+            self::ACCOUNT_STATUS_WRITTEN_OFF => self::API_STATUS_WRITTEN_OFF
         ];
 
         return $mapping[$dbStatus];
