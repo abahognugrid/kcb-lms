@@ -34,7 +34,6 @@ class AutoWriteOffAfterDays extends Command
             Log::info('Starting auto write-off process...');
 
             $eligibleLoans = $this->getEligibleLoans();
-
             if ($eligibleLoans->isEmpty()) {
                 $this->info('No loans eligible for auto write-off found.');
                 Log::info('No loans eligible for auto write-off found.');
@@ -52,8 +51,8 @@ class AutoWriteOffAfterDays extends Command
 
             return self::SUCCESS;
         } catch (\Exception $e) {
-            $this->error('Error during auto write-off: '.$e->getMessage());
-            Log::error('Error during auto write-off: '.$e->getMessage(), [
+            $this->error('Error during auto write-off: ' . $e->getMessage());
+            Log::error('Error during auto write-off: ' . $e->getMessage(), [
                 'exception' => $e,
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -76,7 +75,14 @@ class AutoWriteOffAfterDays extends Command
                 $query->where('Arrears_Auto_Write_Off_Days', '>', 0);
             })
             ->where('Maturity_Date', '<', $today)
-            ->whereRaw('DATEDIFF(?, loans.Maturity_Date) > (SELECT Arrears_Auto_Write_Off_Days FROM loan_products WHERE loan_products.id = loans.Loan_Product_ID)', [$today])
+            ->whereRaw(
+                '(?::date - "loans"."Maturity_Date"::date) > (
+            SELECT "Arrears_Auto_Write_Off_Days"
+            FROM "loan_products"
+            WHERE "loan_products"."id" = "loans"."Loan_Product_ID"
+        )',
+                [$today]
+            )
             ->get();
     }
 
@@ -111,7 +117,7 @@ class AutoWriteOffAfterDays extends Command
                 ]);
             } catch (\Exception $e) {
                 $errorCount++;
-                $this->error("Failed to write off loan ID {$loan->id}: ".$e->getMessage());
+                $this->error("Failed to write off loan ID {$loan->id}: " . $e->getMessage());
                 Log::error("Failed to write off loan ID {$loan->id}", [
                     'loan_id' => $loan->id,
                     'error' => $e->getMessage(),
