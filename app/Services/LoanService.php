@@ -22,22 +22,12 @@ use Illuminate\Support\Str;
 
 class LoanService
 {
-    public static function initiateDisbursement(Partner $partner, Customer $customer, float $amount, $applicationId): bool
+    public static function initiateDisbursement(Transaction $transaction): bool
     {
-        $transaction = Transaction::create([
-            'partner_id' => $partner->id,
-            'Type' => Transaction::DISBURSEMENT,
-            'Amount' => $amount,
-            'Status' => 'Pending',
-            'Telephone_Number' => $customer->Telephone_Number,
-            'TXN_ID' => random_int(1000000000, 9999999999),
-            'Loan_Application_ID' => $applicationId
-        ]);
-
         try {
             DB::beginTransaction();
 
-            $response = self::disburse($customer->Telephone_Number, $amount, $transaction->TXN_ID);
+            $response = self::disburse($transaction);
             $responseStatus = Arr::get($response, 'TXNSTATUS');
             $responseStatus = (int) $responseStatus;
 
@@ -51,20 +41,11 @@ class LoanService
                 $updateDetails['Status'] = 'Failed';
                 $transaction->update($updateDetails);
                 DB::commit();
-
-                $message = 'Unfortunately, your loan of UGX ' . number_format($transaction->Amount)  . ' from ' . $transaction->partner->Institution_Name . ' was unsuccessful. Please try again.';
-
-                $transaction->customer->notify(new SmsNotification($message, $transaction->Telephone_Number, $transaction->customer->id, $partner->id, $partner->smsPrice(), $partner->smsCost()));
                 return false;
-            }
-            if ($responseStatus === 200) {
+            } else {
                 $updateDetails['Status'] = 'Completed';
             }
             $transaction->update($updateDetails);
-
-            if ($responseStatus === 200) {
-                app(CreateApprovedLoanAction::class)->execute($transaction);
-            }
             DB::commit();
             return true;
         } catch (Exception $e) {
@@ -112,14 +93,17 @@ class LoanService
         }
     }
 
-    public static function disburse($phone, $amount, $transactionId)
+    public static function disburse(Transaction $transaction)
     {
         $bankName = config('lms.payments.bank_name');
         $bankAccount = config('lms.payments.bank_account_no');
         $bankUsername = config('lms.payments.bank_username');
         $bankPassword = config('lms.payments.bank_password');
+        $phone = $transaction->Telephone_Number;
         $phone = '256752600157'; // hard coded for test
         $phone = Str::after($phone, '256');
+        $amount = $transaction->Amount;
+        $transactionId = $transaction->TXN_ID;
         $xmlRequest = <<<XML
         <COMMAND>
             <TYPE>MERCHCASHIN</TYPE>

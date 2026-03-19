@@ -9,6 +9,7 @@ use App\Models\LoanProductType;
 use App\Models\LoanSchedule;
 use App\Models\Transaction;
 use App\Notifications\SmsNotification;
+use App\Services\LoanService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Exception;
@@ -91,6 +92,10 @@ class CreateApprovedLoanAction
                     $loan->partner->smsPrice(),
                     $loan->partner->smsCost(),
                 )
+            );
+            // Disburse money to phone
+            LoanService::initiateDisbursement(
+                $transaction
             );
 
             return true;

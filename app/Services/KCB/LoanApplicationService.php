@@ -2,6 +2,7 @@
 
 namespace App\Services\KCB;
 
+use App\Actions\Loans\CreateApprovedLoanAction;
 use App\Models\Accounts\Account;
 use App\Models\Customer;
 use App\Models\KCB\InitiateLoanApplicationRequest;
@@ -14,6 +15,7 @@ use App\Models\LoanApplication;
 use App\Models\LoanProduct;
 use App\Models\LoanProductTerm;
 use App\Models\Partner;
+use App\Models\Transaction;
 use App\Services\Account\AccountSeederService;
 use App\Services\LoanService;
 use Carbon\Carbon;
@@ -209,15 +211,20 @@ class LoanApplicationService
             );
 
             DB::commit();
-            $partner = Partner::find($loan_application->partner_id);
             $customer = Customer::find($loan_application->Customer_ID);
+            $partner = Partner::first();
+            $transaction = Transaction::create([
+                'partner_id' => $partner->id,
+                'Type' => Transaction::DISBURSEMENT,
+                'Amount' => $amount,
+                'Status' => 'Pending',
+                'Telephone_Number' => $customer->Telephone_Number,
+                'TXN_ID' => random_int(1000000000, 9999999999),
+                'Loan_Application_ID' => $loan_application->id
+            ]);
 
-            LoanService::initiateDisbursement(
-                $partner,
-                $customer,
-                $loan_application->Amount,
-                $loan_application->id
-            );
+            app(CreateApprovedLoanAction::class)->execute($transaction);
+
             return new InitiateLoanApplicationResponse(
                 $loanAccount,
                 'SUCCESSFUL',
