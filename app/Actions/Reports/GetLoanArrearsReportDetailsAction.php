@@ -20,13 +20,15 @@ class GetLoanArrearsReportDetailsAction
     protected bool $suspendedInterest = false;
     protected bool $excludeWrittenOffLoans = false;
     protected ?int $loanProductId = null;
-    protected int $partnerId;
+    protected ?int $partnerId;
 
     public function execute()
     {
         $query = Loan::query()
             ->with('customer')
-            ->where('partner_id', $this->partnerId)
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })
             ->whereNotIn('Credit_Account_Status', $this->getExcludedAccountStatuses())
             ->withSum('schedule', 'principal_remaining')
             ->withSum('schedule', 'interest_remaining')
@@ -35,14 +37,15 @@ class GetLoanArrearsReportDetailsAction
                 $query->where('payment_due_date', '<', $this->endDate);
             })
             ->when($this->suspendedInterest, function ($query) {
-                $query->whereRaw('datediff(?, Maturity_Date) > ?', [$this->endDate, 60]);
+                // Cast Maturity_Date to date for day difference calculation
+                $query->whereRaw('?::date - "Maturity_Date"::date > ?', [$this->endDate, 60]);
             })
             ->when($this->loanProductId, function ($query) {
                 $query->where('loan_product_id', $this->loanProductId);
             })
             ->addSelect([
                 'principal_outstanding' => function ($query) {
-                    $query->selectRaw('loans.Facility_Amount_Granted - IFNULL(SUM(journal_entries.credit_amount), 0)')
+                    $query->selectRaw('"loans"."Facility_Amount_Granted"::numeric - COALESCE(SUM("journal_entries"."credit_amount")::numeric, 0)')
                         ->from('loan_repayments')
                         ->join('journal_entries', function ($join) {
                             $join->on('journal_entries.transactable_id', '=', 'loan_repayments.id')
@@ -58,67 +61,70 @@ class GetLoanArrearsReportDetailsAction
                 },
                 'interest_outstanding' => function ($query) {
                     $query->selectRaw('
-                        (SELECT COALESCE(SUM(interest), 0)
-                        FROM loan_schedules
-                        WHERE loan_id = loans.id
-                    ) - (
-                        SELECT COALESCE(SUM(journal_entries.amount), 0)
-                        FROM loan_repayments
-                        INNER JOIN journal_entries ON journal_entries.transactable_id = loan_repayments.id
-                            AND journal_entries.transactable = ? AND journal_entries.partner_id = loan_repayments.partner_id
-                        INNER JOIN accounts ON accounts.id = journal_entries.account_id
-                            AND accounts.slug IN (?)
-                        WHERE loan_repayments.Loan_ID = loans.id
-                            AND DATE(loan_repayments.Transaction_Date) <= ?)
-                    ', [LoanRepayment::class, AccountSeederService::INTEREST_INCOME_FROM_LOANS_SLUG, $this->endDate]);
+                (SELECT COALESCE(SUM(interest), 0)
+                 FROM loan_schedules
+                 WHERE loan_id = "loans"."id"
+                ) - (
+                 SELECT COALESCE(SUM("journal_entries"."amount")::numeric, 0)
+                 FROM loan_repayments
+                 INNER JOIN journal_entries
+                     ON "journal_entries"."transactable_id" = "loan_repayments"."id"
+                     AND "journal_entries"."transactable" = ?
+                     AND "journal_entries"."partner_id" = "loan_repayments"."partner_id"
+                 INNER JOIN accounts
+                     ON "accounts"."id" = "journal_entries"."account_id"
+                     AND "accounts"."slug" IN (?)
+                 WHERE "loan_repayments"."Loan_ID" = "loans"."id"
+                   AND "loan_repayments"."Transaction_Date"::date <= ?)
+            ', [LoanRepayment::class, AccountSeederService::INTEREST_INCOME_FROM_LOANS_SLUG, $this->endDate]);
                 },
                 'penalty_outstanding' => function ($query) {
                     $query->selectRaw('
-                        (SELECT COALESCE(SUM(Amount_To_Pay), 0)
-                        FROM loan_penalties
-                        WHERE Loan_ID = loans.id
-                    ) - (
-                        SELECT COALESCE(SUM(journal_entries.credit_amount), 0)
-                        FROM loan_repayments
-                        INNER JOIN journal_entries ON journal_entries.transactable_id = loan_repayments.id
-                            AND journal_entries.transactable IN (?, ?) AND journal_entries.partner_id = loan_repayments.partner_id
-                        INNER JOIN accounts ON accounts.id = journal_entries.account_id
-                            AND accounts.slug IN (?)
-                        WHERE loan_repayments.Loan_ID = loans.id
-                            AND DATE(loan_repayments.Transaction_Date) <= ?)
-                    ', [LoanRepayment::class, LoanPenalty::class, AccountSeederService::PENALTIES_FROM_LOAN_PAYMENTS_SLUG, $this->endDate]);
+                (SELECT COALESCE(SUM("Amount_To_Pay"::numeric), 0)
+                 FROM loan_penalties
+                 WHERE "Loan_ID" = "loans"."id"
+                ) - (
+                 SELECT COALESCE(SUM("journal_entries"."credit_amount")::numeric, 0)
+                 FROM loan_repayments
+                 INNER JOIN journal_entries
+                     ON "journal_entries"."transactable_id" = "loan_repayments"."id"
+                     AND "journal_entries"."transactable" IN (?, ?)
+                     AND "journal_entries"."partner_id" = "loan_repayments"."partner_id"
+                 INNER JOIN accounts
+                     ON "accounts"."id" = "journal_entries"."account_id"
+                     AND "accounts"."slug" IN (?)
+                 WHERE "loan_repayments"."Loan_ID" = "loans"."id"
+                   AND "loan_repayments"."Transaction_Date"::date <= ?)
+            ', [LoanRepayment::class, LoanPenalty::class, AccountSeederService::PENALTIES_FROM_LOAN_PAYMENTS_SLUG, $this->endDate]);
                 },
                 'total_principal_arrears' => LoanSchedule::query()
-                    ->selectRaw('sum(principal_remaining)')
+                    ->selectRaw('SUM(principal_remaining)')
                     ->whereColumn('loan_id', 'loans.id')
                     ->where('total_outstanding', '>', 0)
-                    //                    ->whereDate('payment_due_date', '<', $this->endDate)
                     ->limit(1),
                 'total_interest_arrears' => LoanSchedule::query()
-                    ->selectRaw('sum(interest_remaining)')
+                    ->selectRaw('SUM(interest_remaining)')
                     ->whereColumn('loan_id', 'loans.id')
                     ->where('total_outstanding', '>', 0)
-                    //                    ->whereDate('payment_due_date', '<', $this->endDate)
                     ->limit(1),
                 'arrear_days' => LoanSchedule::query()
-                    ->selectRaw('datediff(payment_due_date, ?)', [$this->endDate])
+                    ->selectRaw('"payment_due_date"::date - ?::date', [$this->endDate])
                     ->whereColumn('loan_id', 'loans.id')
                     ->where('total_outstanding', '>', 0)
-                    //                    ->whereDate('payment_due_date', '<', $this->endDate)
                     ->orderBy('payment_due_date')
                     ->limit(1),
                 'penalty_amount' => LoanPenalty::query()
-                    ->selectRaw('sum(Amount_To_Pay) - sum(amount)')
-                    ->whereColumn('loan_id', 'loans.id')
+                    ->selectRaw('SUM("Amount_To_Pay"::numeric) - SUM("Amount"::numeric)')
+                    ->whereRaw('"loan_penalties"."Loan_ID" = "loans"."id"')  // instead of whereColumn
                     ->whereDate('created_at', '<', Carbon::parse($this->endDate)->endOfDay()->toDateTimeString())
                     ->limit(1),
                 'penalty_arrears' => LoanPenalty::query()
-                    ->selectRaw('sum(Amount_To_Pay) - sum(amount)')
-                    ->whereColumn('loan_id', 'loans.id')
+                    ->selectRaw('SUM("Amount_To_Pay"::numeric) - SUM("Amount"::numeric)')
+                    ->whereRaw('"loan_penalties"."Loan_ID" = "loans"."id"')  // instead of whereColumn
                     ->whereDate('created_at', '<', Carbon::parse($this->endDate)->endOfDay()->toDateTimeString())
                     ->limit(1),
                 'due_date' => function ($query) {
-                    $query->selectRaw('IFNULL(loan_schedules.payment_due_date, "")')
+                    $query->selectRaw('COALESCE("loan_schedules"."payment_due_date"::text, \'\')')
                         ->from('loan_schedules')
                         ->whereColumn('loan_schedules.loan_id', 'loans.id')
                         ->whereDate('loan_schedules.payment_due_date', '<=', $this->endDate)

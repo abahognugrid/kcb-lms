@@ -218,7 +218,7 @@ class AccountSeederService extends SharedSeederServiceHelper
             'name' => self::RECOVERIES_FROM_WRITTEN_OFF_LOANS_NAME,
             'identifier' => 'IRWL',
             'class' => null,
-            'parent-slug' => self::OTHER_INCOME_SLUG,
+            'parent-slug' => self::INCOME_SLUG,
         ],
         self::PROVISION_FOR_BAD_DEBT_NAME => [
             'name' => self::PROVISION_FOR_BAD_DEBT_NAME,

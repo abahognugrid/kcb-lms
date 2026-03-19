@@ -17,14 +17,15 @@ class GetPaidOffLoansReportDetailsAction
 
     protected ?int $loanProductId = null;
 
-    protected int $partnerId;
+    protected ?int $partnerId;
 
     public function execute()
     {
         $query = Loan::query()
             ->with('customer')
-            ->where('partner_id', $this->partnerId)
-            ->whereIn('Credit_Account_Status', [
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })->whereIn('Credit_Account_Status', [
                 Loan::ACCOUNT_STATUS_FULLY_PAID_OFF,
             ]);
 

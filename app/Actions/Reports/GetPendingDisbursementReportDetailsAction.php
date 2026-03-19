@@ -17,15 +17,14 @@ class GetPendingDisbursementReportDetailsAction
 
     protected ?int $loanProductId = null;
 
-    protected int $partnerId;
+    protected ?int $partnerId;
 
     public function execute()
     {
-        $query = LoanApplication::with([
-            'customer',
-            'loan_product',
-        ])->where('partner_id', $this->partnerId)
-            ->where('Credit_Application_Status', 'Approved')
+        $query = LoanApplication::with(['customer', 'loan_product',])
+            ->when($this->partnerId, function ($query) {
+                $query->where('partner_id', $this->partnerId);
+            })->where('Credit_Application_Status', 'Approved')
             ->doesntHave('loan');
 
         if ($this->startDate && $this->endDate) {

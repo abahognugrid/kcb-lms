@@ -49,7 +49,7 @@ class GetLoanAgeingReportDetailsAction
         $query->with('customer')
             ->addSelect([
                 'principal_outstanding' => function ($query) {
-                    $query->selectRaw('loans.Facility_Amount_Granted - IFNULL(SUM(journal_entries.credit_amount), 0)')
+                    $query->selectRaw('"loans"."Facility_Amount_Granted"::numeric - COALESCE(SUM("journal_entries"."credit_amount")::numeric, 0)')
                         ->from('loan_repayments')
                         ->join('journal_entries', function ($join) {
                             $join->on('journal_entries.transactable_id', '=', 'loan_repayments.id')
@@ -60,7 +60,7 @@ class GetLoanAgeingReportDetailsAction
                             $join->on('accounts.id', '=', 'journal_entries.account_id')
                                 ->where('accounts.accountable_type', LoanProduct::class);
                         })
-                        ->whereColumn('loan_repayments.Loan_ID', 'loans.id')
+                        ->whereRaw('"loan_repayments"."Loan_ID" = "loans"."id"') // case‑sensitive column
                         ->whereDate('loan_repayments.Transaction_Date', '<=', $this->endDate);
                 },
             ])
