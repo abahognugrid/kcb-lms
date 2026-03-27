@@ -35,6 +35,9 @@ class Customer extends Model
         'ID_Type',
         'ID_Number',
         'Telephone_Number',
+        'Is_Delinked',
+        'Delinked_At',
+        'Delinked_Phone_Number',
         'Email_Address',
         'Classification',
         'options',
@@ -51,6 +54,8 @@ class Customer extends Model
         return [
             'Date_of_Birth' => 'date',
             'options' => 'array',
+            'Is_Delinked' => 'boolean',
+            'Delinked_At' => 'datetime',
         ];
     }
 
@@ -253,6 +258,10 @@ class Customer extends Model
     public function storeCreditLimit()
     {
         try {
+            $phone = $this->Telephone_Number;
+            if (app()->isLocal()) {
+                $phone = '256700000101';
+            }
             $accessToken = $this->getAccessToken();
             // Step 2: Use the access token to call the Loan Market API
             $apiResponse = Http::withHeaders([
@@ -260,7 +269,7 @@ class Customer extends Model
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . $accessToken,
             ])->post(config('lms.crb.url') . '/v1/credit-enquiries/credit-limits', [
-                'phone_number' => $this->Telephone_Number,
+                'phone_number' => $phone,
                 'entity_type' => 0,
                 'client_consented' => 'Yes'
             ]);

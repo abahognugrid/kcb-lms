@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\KCB\KCBUssdChannelApiController;
 use App\Http\Controllers\LoanImportController;
 use Illuminate\Support\Facades\Route;
@@ -14,3 +15,4 @@ Route::prefix('mkcb')->group(function () {
     });
 });
 Route::post('/import-loans', [LoanImportController::class, 'import']);
+Route::post('/delink-customers', [LoanImportController::class, 'bulkDelink']);
