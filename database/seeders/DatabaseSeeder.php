@@ -26,5 +26,6 @@ class DatabaseSeeder extends Seeder
     $this->call(FloatTopUpSeeder::class);
     // $this->call(LoanLossProvisionSeeder::class);
     $this->call(PartnerOvaSeeder::class);
+    $this->call(SmsTemplateSeeder::class);
   }
 }
