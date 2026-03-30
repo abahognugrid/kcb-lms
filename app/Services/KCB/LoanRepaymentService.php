@@ -48,7 +48,7 @@ class LoanRepaymentService
                 );
             }
 
-            $partner = Partner::where('Identification_Code', 'CB011')->first();
+            $partner = Partner::first();
 
             // Find active loans for the customer
             $activeLoan = Loan::where('Customer_ID', $customer->id)->where('partner_id', $partner->id)

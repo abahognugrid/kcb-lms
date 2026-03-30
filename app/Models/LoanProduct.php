@@ -164,7 +164,7 @@ class LoanProduct extends Model implements Accountable, Auditable
 
     public function smsTemplates(): HasMany
     {
-        return $this->hasMany(SmsTemplate::class);
+        return $this->hasMany(SmsTemplate::class, 'Loan_Product_ID');
     }
 
     public function payable_account()

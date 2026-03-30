@@ -58,6 +58,14 @@ class LoanService
 
     public static function initiateRepayment(Partner $partner, Customer $customer, float $amount, $loan): void
     {
+        if ($customer->Telephone_Number) {
+            $phoneNumber = $customer->Telephone_Number;
+        } elseif ($customer->Delinked_Phone_Number) {
+            $phoneNumber = $customer->Delinked_Phone_Number;
+        } else {
+            Log::error('Customer has no phone number', ['customer_id' => $customer->id]);
+            throw new Exception('Customer has no phone number');
+        }
         $txnID = Transaction::generateID();
         $providerTxnID = app()->isLocal() ? Transaction::generateID() : null;
         DB::beginTransaction();
@@ -67,7 +75,7 @@ class LoanService
                 'Type' => Transaction::REPAYMENT,
                 'Amount' => $amount,
                 'Status' => 'Completed',
-                'Telephone_Number' => $customer->Telephone_Number,
+                'Telephone_Number' => $phoneNumber,
                 'TXN_ID' => $txnID,
                 'Loan_ID' => $loan->id,
                 'Loan_Application_ID' => $loan->Loan_Application_ID,
@@ -84,7 +92,7 @@ class LoanService
                 $repayment->updateLoanStatus();
             }
             $message = 'Thank you for paying UGX ' . number_format($transaction->Amount) . ' to ' . $transaction->partner->Institution_Name . '. Your payment has been received successfully.';
-            $transaction->customer->notify(new SmsNotification($message, $transaction->Telephone_Number, $transaction->customer->id, $partner->id, $partner->smsPrice(), $partner->smsCost()));
+            $customer->notify(new SmsNotification($message, $phoneNumber, $customer->id, $partner->id, $partner->smsPrice(), $partner->smsCost()));
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

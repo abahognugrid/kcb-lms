@@ -12,7 +12,6 @@ class LoanLossProvisionSeeder extends Seeder
     {
         DB::table('loan_loss_provisions')->insert([
             [
-                'id' => 1,
                 'partner_id' => 1,
                 'loan_product_id' => 1,
                 'ageing_category' => 'Normal',
@@ -31,7 +30,6 @@ class LoanLossProvisionSeeder extends Seeder
                 'updated_at' => Carbon::parse('2026-03-17 14:57'),
             ],
             [
-                'id' => 2,
                 'partner_id' => 1,
                 'loan_product_id' => 1,
                 'ageing_category' => 'Watch',
@@ -50,7 +48,6 @@ class LoanLossProvisionSeeder extends Seeder
                 'updated_at' => Carbon::parse('2026-03-17 14:57'),
             ],
             [
-                'id' => 3,
                 'partner_id' => 1,
                 'loan_product_id' => 1,
                 'ageing_category' => 'Substandard',
@@ -69,7 +66,6 @@ class LoanLossProvisionSeeder extends Seeder
                 'updated_at' => Carbon::parse('2026-03-17 14:57'),
             ],
             [
-                'id' => 4,
                 'partner_id' => 1,
                 'loan_product_id' => 1,
                 'ageing_category' => 'Doubtful',
@@ -88,7 +84,6 @@ class LoanLossProvisionSeeder extends Seeder
                 'updated_at' => Carbon::parse('2026-03-17 14:57'),
             ],
             [
-                'id' => 5,
                 'partner_id' => 1,
                 'loan_product_id' => 1,
                 'ageing_category' => 'Loss',

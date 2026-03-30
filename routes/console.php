@@ -9,7 +9,7 @@ use App\Console\Commands\SendLoggedSms;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command(SendLoggedSms::class)->everyMinute()->withoutOverlapping();
-Schedule::command(PartnerSmsReminders::class)->dailyAt('8pm');
+Schedule::command(PartnerSmsReminders::class)->dailyAt('8am');
 Schedule::command(FlagOverdueLoans::class)->dailyAt('00:01');
 Schedule::command(ApplyLoanPenalties::class)->dailyAt('00:10'); // Run this just after flagging overdue loans
 

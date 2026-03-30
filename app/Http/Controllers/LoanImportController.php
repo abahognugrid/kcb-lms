@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Loan;
 use App\Models\LoansImport;
+use App\Models\Partner;
+use App\Services\LoanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class LoanImportController extends Controller
 {
@@ -151,5 +155,237 @@ class LoanImportController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function bulkCommissionRecovery(Request $request)
+    {
+        if (!$request->hasFile('file')) {
+            return response()->json([
+                'message' => 'CSV file is required'
+            ], 400);
+        }
+
+        $file = $request->file('file');
+
+        if ($file->getClientOriginalExtension() !== 'csv') {
+            return response()->json([
+                'message' => 'Only CSV files are allowed'
+            ], 400);
+        }
+
+        $path = $file->getRealPath();
+        $handle = fopen($path, 'r');
+
+        if (!$handle) {
+            return response()->json(['message' => 'Unable to open file'], 500);
+        }
+        $header = fgetcsv($handle); // skip header row
+
+        $partner = Partner::first(); // assuming single partner; otherwise pass in request
+
+        $processed = 0;
+        $successful = 0;
+        $failed = 0;
+        $errors = [];
+
+        while (($row = fgetcsv($handle)) !== false) {
+            $phone = trim($row[0]);
+            $amount = floatval(trim($row[1]));
+
+            if (!$phone || $amount <= 0) {
+                $failed++;
+                $errors[] = [
+                    'phone' => $phone,
+                    'amount' => $amount,
+                    'error' => 'Invalid phone or amount'
+                ];
+                continue;
+            }
+
+            // Normalize phone
+            $phone = preg_replace('/\D/', '', $phone);
+            if (str_starts_with($phone, '07')) {
+                $phone = '256' . substr($phone, 1);
+            }
+
+            $processed++;
+
+            try {
+                DB::beginTransaction();
+
+                $customer = Customer::where('Telephone_Number', $phone)->first();
+
+                if (!$customer) {
+                    $failed++;
+                    $errors[] = [
+                        'phone' => $phone,
+                        'amount' => $amount,
+                        'error' => 'Customer not found'
+                    ];
+                    DB::rollBack();
+                    continue;
+                }
+
+                // Find active loan
+                $loan = Loan::where('Customer_ID', $customer->id)
+                    ->where('partner_id', $partner->id)
+                    ->whereNot('Credit_Account_Status', Loan::ACCOUNT_STATUS_FULLY_PAID_OFF)
+                    ->first();
+
+                if (!$loan) {
+                    $failed++;
+                    $errors[] = [
+                        'phone' => $phone,
+                        'amount' => $amount,
+                        'error' => 'No active loan found'
+                    ];
+                    DB::rollBack();
+                    continue;
+                }
+
+                // Call your repayment function
+                LoanService::initiateRepayment($partner, $customer, $amount, $loan);
+
+                DB::commit();
+                $successful++;
+            } catch (\Exception $e) {
+                DB::rollBack();
+                $failed++;
+                $errors[] = [
+                    'phone' => $phone,
+                    'amount' => $amount,
+                    'error' => $e->getMessage()
+                ];
+                Log::error("Bulk repayment error: " . $e->getMessage());
+            }
+        }
+
+        fclose($handle);
+
+        return response()->json([
+            'message' => 'Bulk repayment process completed',
+            'summary' => [
+                'processed' => $processed,
+                'successful' => $successful,
+                'failed' => $failed,
+            ],
+            'errors' => $errors
+        ]);
+    }
+
+    public function delinkedLoanRecovery(Request $request)
+    {
+        if (!$request->hasFile('file')) {
+            return response()->json([
+                'message' => 'CSV file is required'
+            ], 400);
+        }
+
+        $file = $request->file('file');
+
+        if ($file->getClientOriginalExtension() !== 'csv') {
+            return response()->json([
+                'message' => 'Only CSV files are allowed'
+            ], 400);
+        }
+
+        $path = $file->getRealPath();
+        $handle = fopen($path, 'r');
+
+        if (!$handle) {
+            return response()->json(['message' => 'Unable to open file'], 500);
+        }
+        $header = fgetcsv($handle); // skip header row
+
+        $partner = Partner::first(); // assuming single partner; otherwise pass in request
+
+        $processed = 0;
+        $successful = 0;
+        $failed = 0;
+        $errors = [];
+
+        while (($row = fgetcsv($handle)) !== false) {
+            $phone = trim($row[0]);
+            $amount = floatval(trim($row[1]));
+
+            if (!$phone || $amount <= 0) {
+                $failed++;
+                $errors[] = [
+                    'phone' => $phone,
+                    'amount' => $amount,
+                    'error' => 'Invalid phone or amount'
+                ];
+                continue;
+            }
+
+            // Normalize phone
+            $phone = preg_replace('/\D/', '', $phone);
+            if (str_starts_with($phone, '07')) {
+                $phone = '256' . substr($phone, 1);
+            }
+
+            $processed++;
+
+            try {
+                DB::beginTransaction();
+
+                $customer = Customer::where('Delinked_Phone_Number', $phone)->first();
+
+                if (!$customer) {
+                    $failed++;
+                    $errors[] = [
+                        'phone' => $phone,
+                        'amount' => $amount,
+                        'error' => 'Delinked Customer not found'
+                    ];
+                    DB::rollBack();
+                    continue;
+                }
+
+                // Find active loan
+                $loan = Loan::where('Customer_ID', $customer->id)
+                    ->where('partner_id', $partner->id)
+                    ->whereNot('Credit_Account_Status', Loan::ACCOUNT_STATUS_FULLY_PAID_OFF)
+                    ->first();
+
+                if (!$loan) {
+                    $failed++;
+                    $errors[] = [
+                        'phone' => $phone,
+                        'amount' => $amount,
+                        'error' => 'No active loan found'
+                    ];
+                    DB::rollBack();
+                    continue;
+                }
+
+                // Call your repayment function
+                LoanService::initiateRepayment($partner, $customer, $amount, $loan);
+
+                DB::commit();
+                $successful++;
+            } catch (\Exception $e) {
+                DB::rollBack();
+                $failed++;
+                $errors[] = [
+                    'phone' => $phone,
+                    'amount' => $amount,
+                    'error' => $e->getMessage()
+                ];
+                Log::error("Bulk repayment error: " . $e->getMessage());
+            }
+        }
+
+        fclose($handle);
+
+        return response()->json([
+            'message' => 'Bulk repayment process completed',
+            'summary' => [
+                'processed' => $processed,
+                'successful' => $successful,
+                'failed' => $failed,
+            ],
+            'errors' => $errors
+        ]);
     }
 }

@@ -8,6 +8,7 @@ use App\Models\LoanLossProvision as LoanLossProvisionModel;
 use App\Models\LoanProduct;
 use App\Models\LoanSchedule;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
@@ -68,7 +69,6 @@ class LoanLossProvision extends Component
             })
             ->orderBy('minimum_days')
             ->get();
-
         return view('livewire.loans.loan-loss-provision', [
             'provisions' => $provisions,
             'maximizedProvision' => $provisions->count() === 5 || $provisions->filter(fn($provision) => $provision->maximum_days === 0)->isNotEmpty(),
@@ -98,7 +98,7 @@ class LoanLossProvision extends Component
     public function addProvision(): void
     {
         $record = $this->validate($this->rules());
-        $record['partner_id'] = auth()->user()->partner_id;
+        $record['partner_id'] = 1;
         $record['created_by'] = auth()->user()->id;
         $record['loan_product_id'] = $this->loanProductId;
         $record['provision_amount'] = 0;
@@ -142,7 +142,7 @@ class LoanLossProvision extends Component
     {
         $rules = $this->rules;
         $rules['ageing_category'][] = Rule::unique('loan_loss_provisions')->where(function ($query) {
-            return $query->where('loan_product_id', $this->loanProductId)->where('partner_id', auth()->user()->partner_id);
+            return $query->where('loan_product_id', $this->loanProductId)->where('partner_id', 1);
         });
 
         return $rules;
@@ -233,7 +233,7 @@ class LoanLossProvision extends Component
         $query = LoanSchedule::query()
             ->whereDate('payment_due_date', '<', now())
             ->whereRelation('loan', function ($query) {
-                $query->where('partner_id', auth()->user()->partner_id)
+                $query->where('partner_id', 1)
                     ->where('Loan_Product_ID', $this->loanProductId)
                     ->whereNotIn('Credit_Account_Status', [
                         LoanAccountType::WrittenOff,

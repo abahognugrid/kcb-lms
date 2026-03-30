@@ -2,11 +2,11 @@
     <div class="mb-4">
         <div class="d-flex flex-row justify-content-between mb-3">
             <p class="my-2">
-                Add all the necessary provisions then approve to update the Chart of Accounts. This approval can only be done once.
+                Add all the necessary provisions then approve to update the Chart of Accounts. This approval can only be
+                done once.
             </p>
-            <?php if ($provisions->first() && !empty($provisions->first()->approved_at)): ?>
+            <?php if (!Auth::user()->is_admin && $provisions->first() && !empty($provisions->first()->approved_at)): ?>
             <button type="button" wire:click="addBatchProvision()" class="btn btn-primary">New Provision</button>
-
             <?php endif; ?>
         </div>
 

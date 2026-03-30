@@ -432,10 +432,19 @@ class LoanRepayment extends BaseTransaction implements Transactable
         $loan->Credit_Account_Status = $accountStatus;
         $loan->Last_Status_Change_Date = Carbon::now();
         $loan->save();
+        $customer = $loan->customer;
+        if ($customer->Telephone_Number) {
+            $phoneNumber = $customer->Telephone_Number;
+        } elseif ($customer->Delinked_Phone_Number) {
+            $phoneNumber = $customer->Delinked_Phone_Number;
+        } else {
+            Log::error('Customer has no phone number', ['customer_id' => $customer->id]);
+            throw new Exception('Customer has no phone number');
+        }
 
         if ($loan->Credit_Account_Status == self::STATUS_FULLY_PAID) {
             $message = 'Congratulations! You have successfully completed your loan with ' . $loan->partner->Institution_Name . '. Thank you for your commitment. You are welcome to borrow again.';
-            $loan->customer->notify(new SmsNotification($message, $loan->customer->Telephone_Number, $loan->customer->id, $loan->partner->id, $loan->partner->smsPrice(), $loan->partner->smsCost()));
+            $customer->notify(new SmsNotification($message, $phoneNumber, $customer->id, $loan->partner->id, $loan->partner->smsPrice(), $loan->partner->smsCost()));
         }
     }
 
