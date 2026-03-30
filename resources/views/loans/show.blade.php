@@ -38,6 +38,12 @@
             <h6>Loan Details</h6>
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Loan Account</strong>
+                    <div>
+                        {{ $loan->Credit_Account_Reference }}
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
                     <strong>Loan Product</strong>
                     <div>
                         {{ $loan->loan_product->Name }}
@@ -129,7 +135,19 @@
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <strong>Telephone</strong>
                     <div>
-                        {{ $loan->customer->Telephone_Number }}
+                        {{ $loan->customer->Telephone_Number ?? $loan->customer->Delinked_Phone_Number }}
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Is Delinked</strong>
+                    <div>
+                        {{ $loan->customer->Is_Delinked ? 'Yes' : 'No' }}
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Delinked At</strong>
+                    <div>
+                        {{ $loan->customer->Delinked_At ?? 'N/A' }}
                     </div>
                 </li>
             </ul>
