@@ -38,13 +38,19 @@
             <h6>Loan Details</h6>
             <ul class="list-group">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Loan Account</strong>
+                    <strong>Loan ID</strong>
+                    <div>
+                        {{ $loan->id }}
+                    </div>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Loan Account Reference</strong>
                     <div>
                         {{ $loan->Credit_Account_Reference }}
                     </div>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Loan Product</strong>
+                    <strong>Loan Product Name</strong>
                     <div>
                         {{ $loan->loan_product->Name }}
                     </div>

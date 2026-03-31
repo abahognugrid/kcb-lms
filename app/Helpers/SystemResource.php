@@ -56,6 +56,7 @@ class SystemResource
             "outstanding-report",
             "overdue-report",
             "blacklisted-report",
+            "delinked-customers-report",
             "repayment-report",
             "written-report",
             "written-off-recovered-report",

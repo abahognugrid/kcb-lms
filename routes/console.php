@@ -14,4 +14,4 @@ Schedule::command(FlagOverdueLoans::class)->dailyAt('00:01');
 Schedule::command(ApplyLoanPenalties::class)->dailyAt('00:10'); // Run this just after flagging overdue loans
 
 Schedule::command(PastDueLoanReminders::class)->cron('0 9 */3 * *');
-Schedule::command(AutoWriteOffAfterDays::class)->dailyAt('00:15');
+// Schedule::command(AutoWriteOffAfterDays::class)->dailyAt('00:15');

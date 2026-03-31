@@ -205,6 +205,11 @@ class CustomerController extends Controller
         return view('reports.borrowers.black_listed_report');
     }
 
+    public function delinkedReport()
+    {
+        return view('reports.borrowers.delinked_customers_report');
+    }
+
     public function blacklistCustomer(Request $request)
     {
         $validated = $request->validate([

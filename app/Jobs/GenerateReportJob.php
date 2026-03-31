@@ -137,6 +137,7 @@ class GenerateReportJob implements ShouldQueue
             'App\Livewire\Reports\PortfolioAtRiskReport' => 'App\Actions\Reports\GetPortfolioAtRiskReportDetailsAction',
             'App\Livewire\Reports\FullPaymentReport' => 'App\Actions\Reports\GetFullPaymentReportDetailsAction',
             'App\Livewire\Reports\BlacklistedCustomersReport' => 'App\Actions\Reports\GetBlacklistedCustomerReportDetailsAction',
+            'App\Livewire\Reports\DelinkedCustomersReport' => 'App\Actions\Reports\GetDelinkedCustomerReportDetailsAction',
             'App\Livewire\Reports\PaidOffLoansReport' => 'App\Actions\Reports\GetPaidOffLoansReportDetailsAction',
             'App\Livewire\Reports\ProvisionsReport' => 'App\Actions\Reports\GetProvisionsReportDetailsAction',
             'App\Livewire\Reports\ExternalAccountsReport' => 'App\Actions\Reports\GetExternalAccountsReportDetailsAction',

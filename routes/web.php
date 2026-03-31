@@ -119,6 +119,7 @@ Route::middleware(['auth', 'force_password_change', EnforceTwoFactor::class])->g
     Route::middleware('permission:create customers')->post('/customer/upload', [CustomerController::class, 'saveBulkUploadUI'])->name('customer.upload.submit');
     Route::middleware('permission:view customers')->get('/loan-customers/search', [CustomerController::class, 'findLoanCustomers'])->name('loan-customers.search');
     Route::middleware('permission:view customers')->get('/reports/customers/blacklisted', [CustomerController::class, 'blackListedReport'])->name('reports.customers.black-listed-report');
+    Route::middleware('permission:view customers')->get('/reports/customers/delinked', [CustomerController::class, 'delinkedReport'])->name('reports.customers.delinked-report');
     Route::middleware('permission:create customers')->post('/customers/blacklist', [CustomerController::class, 'blacklistCustomer'])->name('customer.blacklist');
     Route::middleware('permission:create customers')->post('/customers/unblacklist', [CustomerController::class, 'unblacklistCustomer'])->name('customer.unblacklist');
 
