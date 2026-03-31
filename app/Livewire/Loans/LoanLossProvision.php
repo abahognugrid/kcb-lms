@@ -264,7 +264,11 @@ class LoanLossProvision extends Component
     {
         $arrearsResult = $this->getArrears();
         $arrearsAmount = +$arrearsResult->arrears_amount;
-        $suspendedInterest = +$arrearsResult->suspended_interest;
+        if ($record['ageing_category'] === 'Normal' || $record['ageing_category'] === 'Watch') {
+            $suspendedInterest = 0;
+        } else {
+            $suspendedInterest = +$arrearsResult->suspended_interest;
+        }
 
         if ($arrearsAmount == 0) {
             return $record;
