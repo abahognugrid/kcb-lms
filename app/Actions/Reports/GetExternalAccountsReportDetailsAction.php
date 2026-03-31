@@ -16,7 +16,7 @@ class GetExternalAccountsReportDetailsAction
 
     protected ?string $serviceProvider = null;
 
-    protected int $partnerId;
+    protected ?int $partnerId;
 
     public function execute()
     {

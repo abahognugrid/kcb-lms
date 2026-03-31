@@ -37,14 +37,15 @@ class GetOutstandingAmountsAgeingAction
             if ($maxDays == 0) {
                 // "Above" category - e.g., 180 and above
                 $key = "par_{$minDays}_above";
-                $condition = "DATEDIFF('{$this->endDate}', ls.payment_due_date) >= {$minDays}";
+                $condition = "('{$this->endDate}'::date - ls.payment_due_date::date) >= {$minDays}";
             } else {
                 // Range category - e.g., 1-30, 31-60, etc.
                 $key = "par_{$maxDays}";
                 if ($minDays == 0) {
-                    $condition = "DATEDIFF('{$this->endDate}', ls.payment_due_date) <= {$maxDays}";
+                    $condition = "('{$this->endDate}'::date - ls.payment_due_date::date) <= {$maxDays}";
                 } else {
-                    $condition = "DATEDIFF('{$this->endDate}', ls.payment_due_date) >= {$minDays} AND DATEDIFF('{$this->endDate}', ls.payment_due_date) <= {$maxDays}";
+                    $condition = "('{$this->endDate}'::date - ls.payment_due_date::date) >= {$minDays} 
+                      AND ('{$this->endDate}'::date - ls.payment_due_date::date) <= {$maxDays}";
                 }
             }
 

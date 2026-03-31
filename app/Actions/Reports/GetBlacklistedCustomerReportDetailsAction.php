@@ -14,7 +14,7 @@ class GetBlacklistedCustomerReportDetailsAction
 
     protected int $perPage = 0;
 
-    protected int $partnerId;
+    protected ?int $partnerId;
 
     public function execute()
     {

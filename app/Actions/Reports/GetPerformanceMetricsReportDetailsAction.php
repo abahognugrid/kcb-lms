@@ -7,6 +7,7 @@ use App\Actions\OtherReports\GetGeneralLedgerBreakdownDetailsAction;
 use App\Models\Loan;
 use App\Models\LoanProduct;
 use App\Models\LoanRepayment;
+use App\Models\Partner;
 use App\Services\Account\AccountSeederService;
 use App\Traits\ExportsData;
 use Illuminate\Support\Arr;
@@ -28,7 +29,7 @@ class GetPerformanceMetricsReportDetailsAction
         // Opening balance must be the day before the period starts
         $openingDate = Carbon::parse($this->startDate)->subDay()->toDateString();
 
-        $partnerId = Auth::user()->partner_id;
+        $partnerId = Partner::first()->id;
 
         /**
          * 1) Loan-only aggregates (no schedule join => no duplication)

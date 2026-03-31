@@ -193,7 +193,7 @@ class Loan extends Model
     private function buildDaysInArrearsQuery(string $endDate): \Illuminate\Database\Eloquent\Builder
     {
         return LoanSchedule::query()
-            ->selectRaw('datediff(payment_due_date, ?)', [$endDate])
+            ->selectRaw('(payment_due_date::date - ?::date) AS days_in_arrears', [$endDate])
             ->whereColumn('loan_id', 'loans.id')
             ->where('total_outstanding', '>', 0)
             ->whereDate('payment_due_date', '<', $endDate)

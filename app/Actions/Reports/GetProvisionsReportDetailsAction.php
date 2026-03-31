@@ -18,7 +18,7 @@ class GetProvisionsReportDetailsAction
 
     public ?int $loanProductId = null;
 
-    protected int $partnerId;
+    protected ?int $partnerId;
 
     public function execute()
     {

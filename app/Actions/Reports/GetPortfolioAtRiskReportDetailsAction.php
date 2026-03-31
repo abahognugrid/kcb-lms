@@ -47,8 +47,7 @@ class GetPortfolioAtRiskReportDetailsAction
         $query->with('customer')
             ->addSelect([
                 'principal_outstanding' => function ($query) {
-                    $query->selectRaw('loans.Facility_Amount_Granted - IFNULL(SUM(journal_entries.credit_amount), 0)')
-                        ->from('loan_repayments')
+                    $query->selectRaw('loans."Facility_Amount_Granted"::numeric - COALESCE(SUM(journal_entries.credit_amount)::numeric, 0)')->from('loan_repayments')
                         ->join('journal_entries', function ($join) {
                             $join->on('journal_entries.transactable_id', '=', 'loan_repayments.id')
                                 ->where('journal_entries.transactable', LoanRepayment::class)
