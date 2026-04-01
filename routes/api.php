@@ -15,6 +15,5 @@ Route::prefix('mkcb')->group(function () {
     });
 });
 Route::post('/import-loans', [LoanImportController::class, 'import']);
-Route::post('/delink-customers', [LoanImportController::class, 'bulkDelink']);
 Route::post('/bulk-commission-recovery', [LoanImportController::class, 'bulkCommissionRecovery']);
 Route::post('/delinked-loan-recovery', [LoanImportController::class, 'delinkedLoanRecovery']);

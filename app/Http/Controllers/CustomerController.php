@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\BlacklistedCustomer;
 use App\Models\Customer;
 use App\Services\CustomerInteractionService;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -260,6 +259,71 @@ class CustomerController extends Controller
             return redirect()->route('customers.index')->with('success', 'Customer successfully unblacklisted');
         } else {
             return redirect()->back()->with('error', 'Customer was not unblacklisted');
+        }
+    }
+
+    public function bulkDelink(Request $request)
+    {
+        if (!$request->hasFile('file')) {
+            return redirect()->back()->with('error', 'CSV file is required');
+        }
+
+        $file = $request->file('file');
+
+        if ($file->getClientOriginalExtension() !== 'csv') {
+            return redirect()->back()->with('error', 'Only CSV files are allowed');
+        }
+
+        $handle = fopen($file->getRealPath(), 'r');
+
+        if (!$handle) {
+            return redirect()->back()->with('error', 'Unable to open file');
+        }
+
+        $header = fgetcsv($handle);
+
+        $delinked = 0;
+        $notFound = 0;
+        $processed = 0;
+
+        DB::beginTransaction();
+
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                $phone = trim($row[0]);
+                if (!$phone) continue;
+
+                $phone = preg_replace('/\D/', '', $phone);
+                if (str_starts_with($phone, '07')) {
+                    $phone = '256' . substr($phone, 1);
+                }
+
+                $processed++;
+
+                $customer = Customer::where('Telephone_Number', $phone)->first();
+
+                if ($customer) {
+                    $customer->update([
+                        'Is_Delinked' => true,
+                        'Delinked_At' => now(),
+                        'Delinked_Phone_Number' => $phone,
+                        'Telephone_Number' => null,
+                    ]);
+                    $delinked++;
+                } else {
+                    $notFound++;
+                }
+            }
+
+            fclose($handle);
+            DB::commit();
+
+            return redirect()->back()->with('success', "Delink process completed. Processed: $processed, Delinked: $delinked, Not found: $notFound");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            fclose($handle);
+
+            return redirect()->back()->with('error', 'Error processing file: ' . $e->getMessage());
         }
     }
 }

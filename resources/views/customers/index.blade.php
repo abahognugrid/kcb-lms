@@ -17,6 +17,48 @@
                             </div>
                         </form>
                     </div>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#bulkDelinkModal">
+                                    Bulk Delink Customers
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Bulk Delink Modal -->
+                    <div class="modal fade" id="bulkDelinkModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Bulk Delink Customers</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form method="POST" action="{{ route('customers.bulk-delink') }}"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="file" class="form-label">Upload CSV/Excel File</label>
+                                            <input type="file" class="form-control" id="file" name="file"
+                                                accept=".csv,.xlsx" required>
+                                            <small class="text-muted">Accepted formats: CSV, Excel</small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Import & Delink</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="table-responsive text-nowrap p-5">
                     <table class="table">

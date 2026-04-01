@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Log;
 
 class LoanImportController extends Controller
 {
-
     public function import(Request $request)
     {
         if (!$request->hasFile('file')) {
@@ -76,85 +75,6 @@ class LoanImportController extends Controller
             'message' => 'CSV imported successfully',
             'records' => count($rows)
         ]);
-    }
-
-    public function bulkDelink(Request $request)
-    {
-        if (!$request->hasFile('file')) {
-            return response()->json([
-                'message' => 'CSV file is required'
-            ], 400);
-        }
-
-        $file = $request->file('file');
-
-        if ($file->getClientOriginalExtension() !== 'csv') {
-            return response()->json([
-                'message' => 'Only CSV files are allowed'
-            ], 400);
-        }
-        $handle = fopen($file->getRealPath(), 'r');
-
-        if (!$handle) {
-            return response()->json(['message' => 'Unable to open file'], 500);
-        }
-
-        $header = fgetcsv($handle); // skip header row
-
-        $delinked = 0;
-        $notFound = 0;
-        $processed = 0;
-
-        DB::beginTransaction();
-
-        try {
-            while (($row = fgetcsv($handle)) !== false) {
-                $phone = trim($row[0]);
-                if (!$phone) continue;
-
-                $phone = preg_replace('/\D/', '', $phone);
-                if (str_starts_with($phone, '07')) {
-                    $phone = '256' . substr($phone, 1);
-                }
-
-                $processed++;
-
-                $customer = Customer::where('Telephone_Number', $phone)
-                    ->first();
-
-                if ($customer) {
-                    $customer->update([
-                        'Is_Delinked' => true,
-                        'Delinked_At' => now(),
-                        'Delinked_Phone_Number' => $phone,
-                        'Telephone_Number' => null,
-                    ]);
-                    $delinked++;
-                } else {
-                    $notFound++;
-                }
-            }
-
-            fclose($handle);
-            DB::commit();
-
-            return response()->json([
-                'message' => 'Delink process completed',
-                'summary' => [
-                    'processed' => $processed,
-                    'delinked' => $delinked,
-                    'not_found' => $notFound,
-                ]
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            fclose($handle);
-
-            return response()->json([
-                'message' => 'Error processing file',
-                'error' => $e->getMessage()
-            ], 500);
-        }
     }
 
     public function bulkCommissionRecovery(Request $request)
