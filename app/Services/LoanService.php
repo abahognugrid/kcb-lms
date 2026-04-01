@@ -112,6 +112,7 @@ class LoanService
         $phone = Str::after($phone, '256');
         $amount = $transaction->Amount;
         $transactionId = $transaction->TXN_ID;
+
         $xmlRequest = <<<XML
         <COMMAND>
             <TYPE>MERCHCASHIN</TYPE>
@@ -125,28 +126,41 @@ class LoanService
             <PASSWORD>{$bankPassword}</PASSWORD>
         </COMMAND>
         XML;
-        Log::info('Disbursement Request', ['body' => $xmlRequest]);
+
+        Log::info("Disbursement Request:\n" . $xmlRequest);
+
         $url = config('lms.payments.bank_api_url');
 
         try {
             if (app()->isLocal()) {
-                return [
+                // Simulated response
+                $responseArray = [
                     'TXNSTATUS' => 200,
                     'TXNID' => random_int(100000000000, 999999999999),
                     'MESSAGE' => 'SENT.TID 131609401618. UGX 148,500 to SAM KAKOOZA  0740618886. Fee UGX 0. Bal UGX 1,066,244,314. Date 26-September-2025 17:54.',
                     'EXTTRID' => $transactionId,
                 ];
+                // Log as JSON
+                Log::info("Disbursement Response (Local):" . PHP_EOL . json_encode($responseArray, JSON_PRETTY_PRINT));
+
+                return $responseArray;
             }
+
             $response = Http::withHeaders([
                 'Content-Type' => 'application/xml',
             ])->send('POST', $url, [
                 'body' => $xmlRequest,
             ]);
+
             $responseXml = $response->body();
-            Log::info('Disbursement Response', ['body' => $responseXml]);
+
+            // Convert XML to JSON
             $xml = simplexml_load_string($responseXml, "SimpleXMLElement", LIBXML_NOCDATA);
-            $json = json_encode($xml);
-            return json_decode($json, true);
+            $responseArray = json_decode(json_encode($xml), true);
+
+            Log::info('Disbursement Response', ['body' => json_encode($responseArray)]);
+
+            return $responseArray;
         } catch (\Exception $e) {
             Log::error('Disbursement error', ['error' => $e->getMessage()]);
             return false;

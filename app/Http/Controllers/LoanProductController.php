@@ -175,9 +175,11 @@ class LoanProductController extends Controller
     public function show(Request $request, LoanProduct $loanProduct)
     {
         $apiResponse = $this->getBusinessRules($loanProduct);
-        $rules = $apiResponse['rules'];
-        $minimumPrincipal = (int)$apiResponse['base_amount']['minimum'];
-        $maximumPrincipal = (int)$apiResponse['base_amount']['maximum'];
+
+        $rules = $apiResponse['rules'] ?? [];
+        $minimumPrincipal = (int)($apiResponse['base_amount']['minimum'] ?? 0);
+        $maximumPrincipal = (int)($apiResponse['base_amount']['maximum'] ?? 0);
+
         $loanProduct->load(
             'loan_product_type',
             'loan_product_terms',
@@ -185,6 +187,7 @@ class LoanProductController extends Controller
             'loan_product_penalties',
             'general_ledger_account'
         );
+
         return view('loan-products.show', compact('loanProduct', 'rules', 'maximumPrincipal', 'minimumPrincipal'));
     }
 
@@ -197,10 +200,12 @@ class LoanProductController extends Controller
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . $accessToken,
-            ])->post(config('lms.crb.url') . '/v1/loan-market/business-rules', [
+            ])->post(config('lms.crb.url') . '/v1/loan-market/business-ruless', [
                 'partnerCode' => $loanProduct->partner->Identification_Code,
                 'productReference' => $productCode,
             ]);
+            Log::info("Business Rules Response:\n" . $apiResponse->body());
+
             if ($apiResponse->successful()) {
                 return $apiResponse->json();
             } else {

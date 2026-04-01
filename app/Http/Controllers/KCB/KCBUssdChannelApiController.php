@@ -36,11 +36,8 @@ class KCBUssdChannelApiController extends Controller
 
     public function contextCustomerRegistration(Request $request)
     {
-        // Log the incoming request
-        Log::info('Airtel Customer Registration Request', [
-            'headers' => $request->headers->all(),
-            'content' => $request->getContent()
-        ]);
+        $content = $request->getContent();
+        Log::info("Customer Registration Request:\n{$content}");
 
         try {
             // Get the raw XML content
@@ -55,7 +52,9 @@ class KCBUssdChannelApiController extends Controller
 
             // Process the registration
             $response = $this->registrationService->registerCustomer($registrationRequest);
-
+            // Log the XML response
+            $xmlResponse = $response->toXml();
+            Log::info("Customer Registration Response:\n" . $xmlResponse);
             // Return XML response
             return response($response->toXml(), 200)
                 ->header('Content-Type', 'application/xml');
@@ -83,11 +82,8 @@ class KCBUssdChannelApiController extends Controller
 
     public function contextGetCustomerDetails(Request $request)
     {
-        // Log the incoming request
-        Log::info('Airtel Get Customer Details Request', [
-            'headers' => $request->headers->all(),
-            'content' => $request->getContent()
-        ]);
+        $content = $request->getContent();
+        Log::info("Customer Details Request:\n{$content}");
 
         try {
             // Get the raw XML content
@@ -108,7 +104,9 @@ class KCBUssdChannelApiController extends Controller
 
             // Process the request
             $response = $this->customerDetailsService->getCustomerDetails($detailsRequest);
-
+            // Log the XML response
+            $xmlResponse = $response->toXml();
+            Log::info("Get Customer Details Response:\n" . $xmlResponse);
             // Return XML response
             return response($response->toXml(), 200)
                 ->header('Content-Type', 'application/xml');
@@ -146,6 +144,9 @@ class KCBUssdChannelApiController extends Controller
 
     public function contextInitiateLoanApplication(Request $request)
     {
+        $content = $request->getContent();
+        Log::info("Loan Application Request:\n{$content}");
+
         try {
             // Get the raw XML content
             $xmlContent = $request->getContent();
@@ -159,7 +160,9 @@ class KCBUssdChannelApiController extends Controller
 
             // Process the loan application
             $response = $this->loanApplicationService->initiateLoanApplication($loanRequest);
-
+            // Log the XML response
+            $xmlResponse = $response->toXml();
+            Log::info("Loan Application Response:\n" . $xmlResponse);
             // Return XML response
             return response($response->toXml(), 200)
                 ->header('Content-Type', 'application/xml');
@@ -193,11 +196,8 @@ class KCBUssdChannelApiController extends Controller
 
     public function contextInitiateLoanRepayment(Request $request)
     {
-        // Log the incoming request
-        Log::info('Airtel Initiate Loan Repayment Request', [
-            'headers' => $request->headers->all(),
-            'content' => $request->getContent()
-        ]);
+        $content = $request->getContent();
+        Log::info("Loan Repayment Request:\n{$content}");
 
         try {
             // Get the raw XML content
@@ -213,6 +213,9 @@ class KCBUssdChannelApiController extends Controller
             // Process the loan repayment
             $response = $this->loanRepaymentService->initiateLoanRepayment($repaymentRequest);
 
+            // Log the XML response
+            $xmlResponse = $response->toXml();
+            Log::info("Loan Repayment Response:\n" . $xmlResponse);
             // Return XML response
             return response($response->toXml(), 200)
                 ->header('Content-Type', 'application/xml');

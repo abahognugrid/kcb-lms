@@ -98,12 +98,6 @@ class CustomerRegistrationService
             $customer->storeCreditLimit();
             DB::commit();
 
-            Log::info('Customer and savings account registered successfully', [
-                'customer_id' => $customer->id,
-                'savings_account_id' => $savingsAccount->id,
-                'airtel_reference' => $request->requestreference
-            ]);
-
             return new CustomerRegistrationResponse(
                 'CUST' . str_pad($customer->id, 8, '0', STR_PAD_LEFT),
                 $savingsAccountResponse,

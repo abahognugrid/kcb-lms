@@ -196,7 +196,6 @@ class LoanSchedule extends Model
 
     protected static function generateFlatSchedule($type, $loan, $principal, $rate, $term, $interestRateFrequency = 'Monthly', $repaymentFrequency = "Monthly")
     {
-        Log::info("Generating flat schedule for loan ID: {$loan->id}, Principal: $principal, Rate: $rate, Term: $term, Interest Rate Frequency: $interestRateFrequency, Repayment Frequency: $repaymentFrequency");
         // Validate inputs
         if (!isset($term) || !isset($rate)) {
             throw new Exception("Loan term or interest rate is not set.");

@@ -3,6 +3,7 @@
 namespace App\Actions\Loans;
 
 use App\Enums\LoanApplicationStatus;
+use App\Jobs\LoanDisbursementJob;
 use App\Models\Loan;
 use App\Models\LoanDisbursement;
 use App\Models\LoanProductType;
@@ -94,9 +95,7 @@ class CreateApprovedLoanAction
                 )
             );
             // Disburse money to phone
-            LoanService::initiateDisbursement(
-                $transaction
-            );
+            LoanDisbursementJob::dispatch($transaction);
 
             return true;
         } catch (Exception $e) {

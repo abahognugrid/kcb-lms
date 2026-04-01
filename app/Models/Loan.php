@@ -90,6 +90,7 @@ class Loan extends Model
         'Written_Off_Amount',
         'Written_Off_Reason',
         'Written_Off_Officer',
+        'Disbursement_Status',
         'Written_Off_Amount_Recovered',
         'Last_Recovered_At',
         'Blacklisted_Date',

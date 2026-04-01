@@ -79,12 +79,24 @@
                         {{ $loan->loan_term?->Interest_Cycle }}
                     </div>
                 </li>
-                {{-- <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <strong>Interest Amount</strong>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>Disbursement Status</strong>
                     <div>
-                        <x-money :value="$loan->totalInterest()" />
+                        @php
+                            $statusClass = match ($loan->Disbursement_Status) {
+                                'Pending' => 'text-warning',
+                                'Processing' => 'text-primary',
+                                'Completed' => 'text-success',
+                                'Failed' => 'text-danger',
+                                default => 'text-secondary',
+                            };
+                        @endphp
+
+                        <span class="{{ $statusClass }}">
+                            {{ $loan->Disbursement_Status }}
+                        </span>
                     </div>
-                </li> --}}
+                </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <strong>Maturity Date</strong>
                     <div>

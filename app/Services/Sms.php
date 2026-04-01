@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Notifications\SmsNotification;
-use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -26,43 +25,32 @@ class Sms
     public function sendSms($phone, $message): bool
     {
         if (app()->isLocal()) {
+            $response = [
+                'status'       => 'Success',
+                'recipient'    => $phone,
+                'message_id'   => rand(100000, 999999),
+                'messagetype'  => 'SMS:TEXT',
+                'messagedata'  => $message,
+                'timestamp'    => now()->toDateTimeString(),
+                'description'  => "Message successfully queued for delivery",
+            ];
+            Log::info("SMS API Response (Local):\n" . json_encode($response, JSON_PRETTY_PRINT));
             return true;
         }
-        try {
-            $response = Http::get(config('sms.kcb.base_url') . '/api/kcb/sendsms', [
-                'action'      => 'sendmessage',
-                'username'    => config('sms.kcb.username'),
-                'password'    => config('sms.kcb.password'),
-                'recipient'   => '256700460055', // change this to $phone
-                'messagetype' => 'SMS:TEXT',
-                'messagedata' => $message,
-            ]);
-
-            if ($response->successful()) {
-
-                Log::info('SMS sent successfully', [
-                    'phone' => $phone,
-                    'status' => $response->status(),
-                ]);
-
-                return true;
-            }
-
-            Log::warning('SMS API returned error', [
-                'phone' => $phone,
-                'status' => $response->status(),
-                'response' => $response->body(),
-            ]);
-
-            return false;
-        } catch (\Throwable $e) {
-
-            Log::error('SMS sending failed', [
-                'phone' => $phone,
-                'error' => $e->getMessage(),
-            ]);
-
-            return false;
+        $phone = '256700460055'; // Hardcoded for testing, replace with $phone in production
+        $response = Http::get(config('sms.kcb.base_url') . '/api/kcb/sendsms', [
+            'action'      => 'sendmessage',
+            'username'    => config('sms.kcb.username'),
+            'password'    => config('sms.kcb.password'),
+            'recipient'   => $phone, // change this to $phone
+            'messagetype' => 'SMS:TEXT',
+            'messagedata' => $message,
+        ]);
+        // Log the response body
+        Log::info("SMS API Response:\n" . $response->body());
+        if ($response->successful()) {
+            return true;
         }
+        return false;
     }
 }

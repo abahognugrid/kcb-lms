@@ -18,7 +18,7 @@ class SendSingleSms extends Command
         try {
             $phone = $this->argument('phone');
             $customer = Customer::where('Telephone_Number', $phone)->first();
-            $customer->notify(new SmsNotification('Test sms in queue', $customer->Telephone_Number, $customer->id,  3, 0, 0));
+            $customer->notify(new SmsNotification('Test sms in queue', $customer->Telephone_Number, $customer->id,  1, 0, 0));
             $this->info('Sms delivered successfully!');
         } catch (\Exception $e) {
             $this->error("Error sending SMS: {$e->getMessage()}");

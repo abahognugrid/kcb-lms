@@ -273,7 +273,7 @@ class Customer extends Model
                 'entity_type' => 0,
                 'client_consented' => 'Yes'
             ]);
-
+            Log::info("CRB Credit Limits Response:\n" . $apiResponse->body());
             if ($apiResponse->successful()) {
 
                 $responseData = $apiResponse->json();
@@ -289,8 +289,6 @@ class Customer extends Model
                 if (is_null($creditLimit)) {
                     throw new Exception('Credit API error: ' . $responseData['error']);
                 }
-
-                Log::info('API call successful', $responseData);
 
                 $partner = Partner::first();
 
