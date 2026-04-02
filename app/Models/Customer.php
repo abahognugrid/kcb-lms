@@ -270,7 +270,8 @@ class Customer extends Model
                 'Authorization' => 'Bearer ' . $accessToken,
             ])->post(config('lms.crb.url') . '/v1/credit-enquiries/credit-limits', [
                 'phone_number' => $phone,
-                'entity_type' => 0,
+                'entity_type' => 1,
+                'entity_type_category' => 'AGENT',
                 'client_consented' => 'Yes'
             ]);
             Log::info("CRB Credit Limits Response:\n" . $apiResponse->body());
