@@ -80,24 +80,20 @@ class LoanImportController extends Controller
     public function bulkCommissionRecovery(Request $request)
     {
         if (!$request->hasFile('file')) {
-            return response()->json([
-                'message' => 'CSV file is required'
-            ], 400);
+            return redirect()->back()->with('error', 'CSV file is required');
         }
 
         $file = $request->file('file');
 
         if ($file->getClientOriginalExtension() !== 'csv') {
-            return response()->json([
-                'message' => 'Only CSV files are allowed'
-            ], 400);
+            return redirect()->back()->with('error', 'Only CSV files are allowed');
         }
 
         $path = $file->getRealPath();
         $handle = fopen($path, 'r');
 
         if (!$handle) {
-            return response()->json(['message' => 'Unable to open file'], 500);
+            return redirect()->back()->with('error', 'Unable to open file');
         }
         $header = fgetcsv($handle); // skip header row
 
@@ -177,43 +173,33 @@ class LoanImportController extends Controller
                     'error' => $e->getMessage()
                 ];
                 Log::error("Bulk repayment error: " . $e->getMessage());
+                Log::error("Bulk repayment error: ", [$e]);
+                return redirect()->back()->with('error', 'An error occurred during processing. Check logs for details.');
             }
         }
 
         fclose($handle);
 
-        return response()->json([
-            'message' => 'Bulk repayment process completed',
-            'summary' => [
-                'processed' => $processed,
-                'successful' => $successful,
-                'failed' => $failed,
-            ],
-            'errors' => $errors
-        ]);
+        return redirect()->back()->with('success', "Bulk repayment process completed. Processed: $processed, Successful: $successful, Failed: $failed")->with('import_errors', $errors);
     }
 
     public function delinkedLoanRecovery(Request $request)
     {
         if (!$request->hasFile('file')) {
-            return response()->json([
-                'message' => 'CSV file is required'
-            ], 400);
+            return redirect()->back()->with('error', 'CSV file is required');
         }
 
         $file = $request->file('file');
 
         if ($file->getClientOriginalExtension() !== 'csv') {
-            return response()->json([
-                'message' => 'Only CSV files are allowed'
-            ], 400);
+            return redirect()->back()->with('error', 'Only CSV files are allowed');
         }
 
         $path = $file->getRealPath();
         $handle = fopen($path, 'r');
 
         if (!$handle) {
-            return response()->json(['message' => 'Unable to open file'], 500);
+            return redirect()->back()->with('error', 'Unable to open file');
         }
         $header = fgetcsv($handle); // skip header row
 
@@ -293,19 +279,14 @@ class LoanImportController extends Controller
                     'error' => $e->getMessage()
                 ];
                 Log::error("Bulk repayment error: " . $e->getMessage());
+                Log::error("Bulk repayment error: ", [$e]);
+
+                return redirect()->back()->with('error', 'An error occurred during processing. Check logs for details.');
             }
         }
 
         fclose($handle);
 
-        return response()->json([
-            'message' => 'Bulk repayment process completed',
-            'summary' => [
-                'processed' => $processed,
-                'successful' => $successful,
-                'failed' => $failed,
-            ],
-            'errors' => $errors
-        ]);
+        return redirect()->back()->with('success', "Delinked loan recovery process completed. Processed: $processed, Successful: $successful, Failed: $failed")->with('import_errors', $errors);
     }
 }

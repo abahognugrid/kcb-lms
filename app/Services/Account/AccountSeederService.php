@@ -136,12 +136,12 @@ class AccountSeederService extends SharedSeederServiceHelper
             'class' => null,
             'parent-slug' => self::ASSETS_SLUG,
         ],
-        self::SAVINGS_PRODUCTS_FIXED_SLUG => [
-            'name' => self::SAVINGS_PRODUCTS_NAME,
-            'identifier' => 'LSP',
-            'class' => SavingsProduct::class,
-            'parent-slug' => self::LIABILITIES_SLUG,
-        ],
+        // self::SAVINGS_PRODUCTS_FIXED_SLUG => [
+        //     'name' => self::SAVINGS_PRODUCTS_NAME,
+        //     'identifier' => 'LSP',
+        //     'class' => SavingsProduct::class,
+        //     'parent-slug' => self::LIABILITIES_SLUG,
+        // ],
         self::PAYABLES_SLUG => [
             'name' => self::PAYABLES_NAME,
             'identifier' => self::PAYABLES_IDENTIFIER,
@@ -156,12 +156,19 @@ class AccountSeederService extends SharedSeederServiceHelper
             'parent-slug' => self::LIABILITIES_SLUG,
         ],
 
-        self::GNUGRID_COMMISSION_ACCOUNT_SLUG => [
-            'name' => self::GNUGRID_COMMISSION_ACCOUNT,
-            'identifier' => 'LPY.1001',
+        self::LOAN_OVER_PAYMENTS_SLUG => [
+            'name' => self::LOAN_OVER_PAYMENTS,
+            'identifier' => 'ILOP',
             'class' => null,
-            'parent-slug' => self::PAYABLES_SLUG,
+            'parent-slug' => self::LIABILITIES_SLUG,
         ],
+
+        // self::GNUGRID_COMMISSION_ACCOUNT_SLUG => [
+        //     'name' => self::GNUGRID_COMMISSION_ACCOUNT,
+        //     'identifier' => 'LPY.1001',
+        //     'class' => null,
+        //     'parent-slug' => self::PAYABLES_SLUG,
+        // ],
 
         self::LOAN_PRODUCTS_FIXED_SLUG => [
             'name' => self::LOAN_PRODUCTS_NAME,
@@ -190,12 +197,7 @@ class AccountSeederService extends SharedSeederServiceHelper
             'class' => null,
             'parent-slug' => self::INCOME_SLUG,
         ],
-        self::LOAN_OVER_PAYMENTS_SLUG => [
-            'name' => self::LOAN_OVER_PAYMENTS,
-            'identifier' => 'ILOP',
-            'class' => null,
-            'parent-slug' => self::LIABILITIES_SLUG,
-        ],
+
         self::INCOME_FROM_FINES_NAME => [
             'name' => self::INCOME_FROM_FINES_NAME,
             'identifier' => 'IF',

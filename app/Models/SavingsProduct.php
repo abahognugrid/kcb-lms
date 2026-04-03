@@ -42,13 +42,13 @@ class SavingsProduct extends Model implements Accountable, Auditable
     {
         parent::boot();
         static::addGlobalScope(new PartnerScope);
-        self::creating(function ($savings_product) {
-            $id = strtoupper(uniqid());
-            $savings_product->code = "SP-{$id}";
-        });
-        self::created(function (SavingsProduct $savings_product) {
-            AccountSeederService::addToFixedAccount($savings_product);
-        });
+        // self::creating(function ($savings_product) {
+        //     $id = strtoupper(uniqid());
+        //     $savings_product->code = "SP-{$id}";
+        // });
+        // self::created(function (SavingsProduct $savings_product) {
+        //     AccountSeederService::addToFixedAccount($savings_product);
+        // });
     }
 
     public function partner()

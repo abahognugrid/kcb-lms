@@ -6,14 +6,87 @@
                 <h5 class="mb-0">Repayment Report</h5>
             </div>
             <div class="col-md-8 d-flex justify-content-end">
-                <select class="form-select w-50" wire:model.live="loanProductId">
-                    <option value="">Select Loan Product</option>
-                    @foreach ($loanProducts as $loanProductId => $loanProductName)
-                        <option value="{{ $loanProductId }}">{{ $loanProductName }}</option>
-                    @endforeach
-                </select>
                 <x-date-filter />
                 <x-export-buttons />
+                <div>
+                    <div class="dropdown">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Actions
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#bulkCommissionRecoveryModal">
+                                    Bulk Commission Recovery
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal"
+                                    data-bs-target="#delinkedLoanRecoveryModal">
+                                    Delinked Loan Recovery
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Bulk Delink Modal -->
+                    <div class="modal fade" id="bulkCommissionRecoveryModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Bulk Commission Recovery</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form method="POST" action="{{ route('loans.bulk-commission-recovery') }}"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="file" class="form-label">Upload CSV/Excel File</label>
+                                            <input type="file" class="form-control" id="file" name="file"
+                                                accept=".csv,.xlsx" required>
+                                            <small class="text-muted">Accepted formats: CSV, Excel</small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Import & Recover</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bulk Delink Modal -->
+                    <div class="modal fade" id="delinkedLoanRecoveryModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Delinked Loan Recovery</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <form method="POST" action="{{ route('loans.delinked-loan-recovery') }}"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="file" class="form-label">Upload CSV/Excel File</label>
+                                            <input type="file" class="form-control" id="file" name="file"
+                                                accept=".csv,.xlsx" required>
+                                            <small class="text-muted">Accepted formats: CSV, Excel</small>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Import & Recover</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -56,7 +129,7 @@
                             <td class="text-end">{{ $record->customer->Telephone_Number }}</td>
                             <td class="text-end"><x-money :value="$record->Credit_Amount" /></td>
                             <td class="text-end">{{ $record->Credit_Account_Date->format('Y-m-d') }}</td>
-                            <td class="text-end">{{ $record->due_date ? $record->due_date: 'N/A' }}</td>
+                            <td class="text-end">{{ $record->due_date ? $record->due_date : 'N/A' }}</td>
                             <td class="text-end">{{ $record->Maturity_Date->format('Y-m-d') }}</td>
                             <td class="text-end">{{ $record->last_payment_date }}</td>
                             <td class="text-end"><x-money :value="$record->principal_due" /></td>

@@ -21,6 +21,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LabelController;
 use App\Http\Controllers\LoanApplicationController;
 use App\Http\Controllers\LoanController;
+use App\Http\Controllers\LoanImportController;
 use App\Http\Controllers\LoanProductController;
 use App\Http\Controllers\LoanProductFeesController;
 use App\Http\Controllers\LoanProductPenaltiesController;
@@ -291,4 +292,6 @@ Route::middleware(['auth', 'force_password_change', EnforceTwoFactor::class])->g
     Route::get('/downloads/{notification}/download', [\App\Http\Controllers\DownloadsController::class, 'download'])->name('downloads.download');
 
     Route::middleware('permission:view logs')->get('/logs', [LogController::class, 'index'])->name('logs.index');
+    Route::middleware('permission:view logs')->post('/bulk-commission-recovery', [LoanImportController::class, 'bulkCommissionRecovery'])->name('loans.bulk-commission-recovery');
+    Route::middleware('permission:view logs')->post('/delinked-loan-recovery', [LoanImportController::class, 'delinkedLoanRecovery'])->name('loans.delinked-loan-recovery');
 });
