@@ -257,23 +257,45 @@ class Customer extends Model
 
     public function storeCreditLimit()
     {
+        $loans = $this->loans;
+        $lastMaturedLoan = $loans->where('Maturity_Date', '<', Carbon::now())->last();
         try {
             $phone = $this->Telephone_Number;
             if (app()->isLocal()) {
                 $phone = '256700000101';
             }
+            $postData = [
+                'phone_number' => $phone,
+                'entity_type' => 1,
+                'entity_type_category' => 'AGENT',
+                'client_consented' => 'Yes',
+                'prevLoanCount' => $loans->where('Maturity_Date', '<', Carbon::now())->count(),
+                'prevLoanDaysInArrears' => $lastMaturedLoan
+                    ? max(
+                        0,
+                        $lastMaturedLoan->Maturity_Date
+                            ->diffInDays(
+                                $lastMaturedLoan->Credit_Account_Closure_Date ?? Carbon::today(),
+                                false
+                            )
+                    )
+                    : null,
+                'prevLoansPaidOnTime' => $loans->where('Credit_Account_Status', Loan::ACCOUNT_STATUS_FULLY_PAID_OFF)
+                    ->where('Maturity_Date', '>=', 'Credit_Account_Closure_Date')->count(),
+                'prevLoanRepaymentDate' => $lastMaturedLoan?->Credit_Account_Status == Loan::ACCOUNT_STATUS_FULLY_PAID_OFF ? $lastMaturedLoan?->Credit_Account_Closure_Date?->toDateString() : null,
+                'prevLoanDisbursementDate' => $lastMaturedLoan?->Credit_Account_Date?->toDateString(),
+                'prevLoanMaturityDate' => $lastMaturedLoan?->Maturity_Date?->toDateString(),
+                'prevLoanLimit' => $lastMaturedLoan?->application?->Loan_Limit,
+                'prevLoanRepaymentMultiplier' => $lastMaturedLoan?->application?->Loan_Repayment_Multiplier,
+                'prevLoanDaysLateMultiplier' => $lastMaturedLoan?->application?->Loan_Days_Late_Multiplier,
+            ];
             $accessToken = $this->getAccessToken();
             // Step 2: Use the access token to call the Loan Market API
             $apiResponse = Http::withHeaders([
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . $accessToken,
-            ])->post(config('lms.crb.url') . '/v1/credit-enquiries/credit-limits', [
-                'phone_number' => $phone,
-                'entity_type' => 1,
-                'entity_type_category' => 'AGENT',
-                'client_consented' => 'Yes'
-            ]);
+            ])->post(config('lms.crb.url') . '/v1/credit-enquiries/credit-limits', $postData);
             Log::info("CRB Credit Limits Response:\n" . $apiResponse->body());
             if ($apiResponse->successful()) {
 
@@ -293,15 +315,19 @@ class Customer extends Model
 
                 $partner = Partner::first();
 
-                CreditLimit::create([
-                    'customer_id' => $this->id,
-                    'partner_id' => $partner->id,
-                    'credit_limit' => $creditLimit,
-                    'used_credit' => 0,
-                    'available_credit' => $creditLimit,
-                    'Created_At' => Carbon::now(),
-                    'Updated_At' => Carbon::now(),
-                ]);
+                CreditLimit::firstOrCreate(
+                    [
+                        'customer_id' => $this->id,
+                        'partner_id' => $partner->id,
+                    ],
+                    [
+                        'credit_limit' => $creditLimit,
+                        'used_credit' => 0,
+                        'available_credit' => $creditLimit,
+                        'Created_At' => Carbon::now(),
+                        'Updated_At' => Carbon::now(),
+                    ]
+                );
 
                 $customer = Customer::find($this->id);
 
