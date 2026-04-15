@@ -262,7 +262,7 @@ class Customer extends Model
         try {
             $phone = $this->Telephone_Number;
             if (app()->isLocal()) {
-                $phone = '256700000101';
+                $phone = '256759000001 ';
             }
             $postData = [
                 'phone_number' => $phone,

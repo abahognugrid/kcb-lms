@@ -200,7 +200,7 @@ class LoanProductController extends Controller
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'Authorization' => 'Bearer ' . $accessToken,
-            ])->post(config('lms.crb.url') . '/v1/loan-market/business-ruless', [
+            ])->post(config('lms.crb.url') . '/v1/loan-market/business-rules', [
                 'partnerCode' => $loanProduct->partner->Identification_Code,
                 'productReference' => $productCode,
             ]);
