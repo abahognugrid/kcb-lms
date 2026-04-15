@@ -8,6 +8,7 @@ use App\Models\KCB\InitiateLoanApplicationRequest;
 use App\Models\KCB\InitiateLoanRepaymentRequest;
 use App\Models\Loan;
 use App\Models\LoanPenalty;
+use App\Models\LoanProduct;
 use App\Models\LoansImport;
 use App\Models\Partner;
 use App\Services\KCB\LoanApplicationService;
@@ -86,7 +87,7 @@ class ImportCustomersAndLoans extends Command
                 $loanRequest->due_date = $row->maturity_date;
                 $loanRequest->currency = 'UGX';
                 $loanRequest->loantype = 'PERSONAL';
-                $loanRequest->productid = 'AG_SNL';
+                $loanRequest->productid = LoanProduct::first()?->Code;
                 $loanApplicationService = new LoanApplicationService();
                 $response = $loanApplicationService->initiateLoanApplication($loanRequest);
                 if ($response->status == 'FAILED') {
@@ -111,7 +112,7 @@ class ImportCustomersAndLoans extends Command
                     $repaymentRequest->requestreference = Str::random(15);
                     $repaymentRequest->accountholderid = $row->telephone_number;
                     $repaymentRequest->amount = $amountPaid;
-                    $repaymentRequest->productid = 'AG_SNL';
+                    $repaymentRequest->productid = LoanProduct::first()?->Code;
                     $loanRepaymentService = new LoanRepaymentService();
                     $response = $loanRepaymentService->initiateLoanRepayment($repaymentRequest);
                     if ($response->status == 'FAILED') {

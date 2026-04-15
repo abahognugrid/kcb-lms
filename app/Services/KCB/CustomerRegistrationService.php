@@ -25,8 +25,8 @@ class CustomerRegistrationService
             $idType = $request->idtype;
             $idNumber = $request->idnumber;
 
-            if ($idType != 'NID') {
-                throw new Exception('ID Type must be set to NID');
+            if ($idType !== 'NID' || $idType !== 'NAT_ID' || $idType !== 'National ID') {
+                throw new Exception('ID Type must be either NID, NAT_ID or National ID');
             }
 
             if (!preg_match('/^(CF|CM)[A-Za-z0-9]{12}$/', $idNumber)) {

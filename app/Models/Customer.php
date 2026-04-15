@@ -267,6 +267,9 @@ class Customer extends Model
             $postData = [
                 'phone_number' => $phone,
                 'entity_type' => 1,
+                'identification_type' => 'ii_country_id',
+                'identifier' => $this->ID_Number,
+                'product_id' => LoanProduct::first()?->Code,
                 'entity_type_category' => 'AGENT',
                 'client_consented' => 'Yes',
                 'prevLoanCount' => $loans->where('Maturity_Date', '<', Carbon::now())->count(),
