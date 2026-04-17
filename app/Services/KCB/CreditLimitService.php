@@ -27,6 +27,7 @@ class CreditLimitService
 
         try {
             $postData = $this->buildPayload($lastMaturedLoan);
+            Log::info("CRB Credit Limit Request:\n" . json_encode($postData));
 
             $accessToken = $this->getAccessToken();
 
@@ -100,9 +101,9 @@ class CreditLimitService
 
             'prevLoanDisbursementDate' => $lastMaturedLoan?->Credit_Account_Date?->toDateString(),
             'prevLoanMaturityDate' => $lastMaturedLoan?->Maturity_Date?->toDateString(),
-            'prevLoanLimit' => $lastMaturedLoan?->application?->Loan_Limit,
-            'prevLoanRepaymentMultiplier' => $lastMaturedLoan?->application?->Loan_Repayment_Multiplier,
-            'prevLoanDaysLateMultiplier' => $lastMaturedLoan?->application?->Loan_Days_Late_Multiplier,
+            'prevLoanLimit' => $lastMaturedLoan?->Credit_Limit,
+            'prevLoanRepaymentMultiplier' => $lastMaturedLoan?->Repayment_Multiplier,
+            'prevLoanDaysLateMultiplier' => $lastMaturedLoan?->Days_Late_Multiplier,
         ];
     }
 
@@ -136,21 +137,6 @@ class CreditLimitService
                 'exclusions' => $exclusions,
                 'data' => $decision,
             ]
-        );
-
-        $message = 'You are not eligible for this service right now. Please keep using AirtelMoney and maintaining a good credit record';
-        if ($creditLimit > 0) {
-            $message = 'Dear ' . $this->customer->name . ', welcome to KCB Agent Loan. Your credit limit is UGX ' . number_format($creditLimit) . '. You can borrow up to this amount anytime. Contact KCB for assistance.';
-        }
-        $this->customer->notify(
-            new SmsNotification(
-                $message,
-                $this->customer->Telephone_Number,
-                $this->customer->id,
-                $partner->id,
-                $partner->smsPrice(),
-                $partner->smsCost(),
-            )
         );
     }
 

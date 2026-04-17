@@ -84,14 +84,6 @@ class LoanApplicationService
                 );
             }
 
-            if ($creditLimit < 5000) {
-                return new InitiateLoanApplicationResponse(
-                    null,
-                    'FAILED',
-                    'Your credit limit is below UGX 5000!'
-                );
-            }
-
             $maxAmount = $creditLimit->credit_limit;
             if ($request->amount > $maxAmount) {
                 return new InitiateLoanApplicationResponse(

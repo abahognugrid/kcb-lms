@@ -96,8 +96,12 @@ class Loan extends Model
         'Blacklisted_Date',
         'Blacklisted_Reason',
         'Blacklisted_By',
+        'Credit_Limit',
+        'Days_Late_Multiplier',
+        'Repayment_Multiplier',
         'created_at',
         'updated_at',
+
     ];
 
     protected function casts(): array

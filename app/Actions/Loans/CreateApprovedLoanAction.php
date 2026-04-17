@@ -26,7 +26,7 @@ class CreateApprovedLoanAction
             $loanApplicationSession = $transaction->loanApplication->loan_session;
             $loanApplicationSession->loadMissing('loanProductTerm');
             $loanProductTerm = $loanApplicationSession->loanProductTerm;
-
+            $creditLimit = $transaction->customer->creditLimits->first();
             DB::beginTransaction();
             $loan = Loan::query()->create([
                 'partner_id' => $transaction->partner_id,
@@ -54,6 +54,9 @@ class CreateApprovedLoanAction
                 'Interest_Rate' => $loanProductTerm->Interest_Rate,
                 'Interest_Calculation_Method' => $loanProductTerm->Interest_Calculation_Method,
                 'Loan_Term_ID' => $loanProductTerm->id,
+                'Credit_Limit' => $creditLimit->credit_limit,
+                'Days_Late_Multiplier' => $creditLimit->loan_days_late_multiplier,
+                'Repayment_Multiplier' => $creditLimit->loan_repayment_multiplier,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);

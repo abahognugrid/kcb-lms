@@ -3,6 +3,7 @@
 
 namespace App\Services\KCB;
 
+use App\Models\CreditLimit;
 use App\Models\Customer;
 use App\Models\SavingsAccount;
 use App\Models\KCB\SavingsAccountResponse;
@@ -10,6 +11,7 @@ use App\Models\KCB\CustomerRegistrationRequest as RegistrationRequest;
 use App\Models\KCB\CustomerRegistrationResponse;
 use App\Models\Partner;
 use App\Models\SavingsProduct;
+use App\Notifications\SmsNotification;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -110,6 +112,8 @@ class CustomerRegistrationService
             $savingsAccountResponse = $this->mapToSavingsAccountResponse($savingsAccount);
             $creditLimitService = new CreditLimitService($customer);
             $creditLimitService->execute();
+            $creditLimit = $customer->creditLimits()->first();
+            $this->sendOptinMessage($creditLimit);
             DB::commit();
 
             return new CustomerRegistrationResponse(
@@ -189,5 +193,31 @@ class CustomerRegistrationService
         }
 
         throw new \Exception('Invalid date format. Expected dd/mm/yyyy');
+    }
+
+    protected function sendOptinMessage(CreditLimit $creditLimit): void
+    {
+        $customer = $creditLimit->customer;
+        $creditLimit = $creditLimit->credit_limit;
+        $partner = Partner::first();
+
+        $message = 'You are not eligible for this service right now. Please keep using AirtelMoney and maintaining a good credit record';
+
+        if ($creditLimit > 0) {
+            $message = 'Dear ' . $customer->name .
+                ', welcome to KCB Agent Loan. Your credit limit is UGX ' .
+                number_format($creditLimit) .
+                '. You can borrow up to this amount anytime. Contact KCB for assistance.';
+        }
+        $customer->notify(
+            new SmsNotification(
+                $message,
+                $customer->Telephone_Number,
+                $customer->id,
+                $partner->id,
+                $partner->smsPrice(),
+                $partner->smsCost(),
+            )
+        );
     }
 }

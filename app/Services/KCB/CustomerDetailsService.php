@@ -97,7 +97,9 @@ class CustomerDetailsService
     private function calculateCreditLimit($customerId): MoneyDetailsType
     {
         $customer = Customer::find($customerId);
-        $creditLimit = $customer->creditLimits()->latest()->first();
+        $creditLimitService = new CreditLimitService($customer);
+        $creditLimitService->execute();
+        $creditLimit = $customer->creditLimits()->first();
         $baseLimit = 0;
 
         if ($creditLimit) {
