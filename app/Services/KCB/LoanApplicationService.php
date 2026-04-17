@@ -17,7 +17,6 @@ use App\Models\LoanProductTerm;
 use App\Models\Partner;
 use App\Models\Transaction;
 use App\Services\Account\AccountSeederService;
-use App\Services\LoanService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -76,12 +75,20 @@ class LoanApplicationService
                 );
             }
 
-            $creditLimit = $customer->creditLimits()->latest()->first();
+            $creditLimit = $customer->creditLimits->first();
             if (!$creditLimit) {
                 return new InitiateLoanApplicationResponse(
                     null,
                     'FAILED',
                     'You do not have a credit limit assigned yet!'
+                );
+            }
+
+            if ($creditLimit < 5000) {
+                return new InitiateLoanApplicationResponse(
+                    null,
+                    'FAILED',
+                    'Your credit limit is below UGX 5000!'
                 );
             }
 

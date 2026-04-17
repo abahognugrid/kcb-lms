@@ -17,6 +17,18 @@ class CreditLimit extends Model
         'credit_limit',
         'used_credit',
         'available_credit',
+        'previous_credit_limit',
+        'loan_days_late_multiplier',
+        'loan_repayment_multiplier',
+        'is_excluded',
+        'exclusions',
+        'data'
+    ];
+
+    protected $casts = [
+        'is_excluded' => 'boolean',
+        'exclusions' => 'array',
+        'data' => 'array',
     ];
 
     /**

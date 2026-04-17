@@ -126,10 +126,12 @@
                                     <strong>ID Number:</strong>
                                     <span>{{ $customer->ID_Number }}</span>
                                 </li>
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <strong>Email:</strong>
-                                    <span>{{ $customer->Email_Address }}</span>
-                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-body">
+                            <ul class="list-group mb-4">
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Telephone Number:</strong>
                                     <span>+{{ $customer->Telephone_Number }}</span>
@@ -179,38 +181,6 @@
                                         <span>{{ data_get($customer->options, 'opt_out_at') }}</span>
                                     </li>
                                 @endif
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover mb-0">
-                                    @if ($creditLimits->count() > 0)
-                                        <thead class="table-light">
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Assigned Limit</th>
-                                                <th>Used Credit</th>
-                                                <th>Available Credit</th>
-                                            </tr>
-                                        </thead>
-                                    @endif
-                                    <tbody>
-                                        @foreach ($creditLimits as $creditLimit)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $creditLimit->credit_limit }}</td>
-                                                <td>{{ $creditLimit->used_credit }}</td>
-                                                <td>{{ $creditLimit->available_credit }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group mb-4">
                                 <li class="list-group-item d-flex justify-content-between">
                                     <strong>Total Loan Amount Received:</strong>
                                     <span>{{ 'UGX ' . number_format($loanAmountDisbursed) }}</span>
@@ -230,7 +200,42 @@
                             </ul>
                         </div>
                     </div>
-                </div><br>
+                </div>
+                @if ($creditLimits->count() > 0)
+                    <div class="card-body">
+                        <h5 class="mb-3">Credit Limit</h5>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Current Limit</th>
+                                        <th>Previous Limit</th>
+                                        <th>Days Late Multiplier</th>
+                                        <th>Repayment Multipier</th>
+                                        <th>Is Excluded</th>
+                                        <th>Exclusions</th>
+                                        <th>Data</th>
+                                        <th>Updated At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($creditLimits as $creditLimit)
+                                        <tr>
+                                            <td>{{ $creditLimit->credit_limit }}</td>
+                                            <td>{{ $creditLimit->previous_credit_limit }}</td>
+                                            <td>{{ $creditLimit->loan_days_late_multiplier }}</td>
+                                            <td>{{ $creditLimit->loan_repayment_multiplier }}</td>
+                                            <td>{{ $creditLimit->is_excluded ? 'Yes' : 'No' }}</td>
+                                            <td>{{ json_encode($creditLimit->exclusions) }}</td>
+                                            <td>{{ json_encode($creditLimit->data) }}</td>
+                                            <td>{{ $creditLimit->updated_at }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
 
                 <!-- Recent Repayments and Loans Section -->
                 <div class="card mb-5">
@@ -272,7 +277,8 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="5" class="text-center py-3 text-muted">No records found
+                                                <td colspan="5" class="text-center py-3 text-muted">No records
+                                                    found
                                                 </td>
                                             </tr>
                                         @endforelse
@@ -312,7 +318,8 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="5" class="text-center py-3 text-muted">No records found
+                                                <td colspan="5" class="text-center py-3 text-muted">No records
+                                                    found
                                                 </td>
                                             </tr>
                                         @endforelse
@@ -344,7 +351,8 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="6" class="text-center py-3 text-muted">No repayments found
+                                                <td colspan="6" class="text-center py-3 text-muted">No repayments
+                                                    found
                                                 </td>
                                             </tr>
                                         @endforelse

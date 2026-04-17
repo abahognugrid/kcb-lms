@@ -10,7 +10,6 @@ use App\Models\KCB\CustomerRegistrationRequest as RegistrationRequest;
 use App\Models\KCB\CustomerRegistrationResponse;
 use App\Models\Partner;
 use App\Models\SavingsProduct;
-use App\Notifications\SmsNotification;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,6 +23,21 @@ class CustomerRegistrationService
         try {
             $idType = $request->idtype;
             $idNumber = $request->idnumber;
+            $resource = $request->resource;
+
+            if (!$idType) {
+                throw new Exception('ID Type field is required');
+            }
+
+            if (!$idNumber) {
+                throw new Exception('ID Number field is required');
+            }
+
+            if (!$resource) {
+                throw new Exception('Resource field is required');
+            }
+
+
             if ($idType != 'NID' && $idType != 'NAT_ID' && $idType != 'National ID') {
                 throw new Exception('ID Type must be either NID, NAT_ID or National ID');
             }
@@ -94,7 +108,8 @@ class CustomerRegistrationService
             // Create savings account for new customer
             $savingsAccount = $this->createSavingsAccount($customer->id);
             $savingsAccountResponse = $this->mapToSavingsAccountResponse($savingsAccount);
-            $customer->storeCreditLimit();
+            $creditLimitService = new CreditLimitService($customer);
+            $creditLimitService->execute();
             DB::commit();
 
             return new CustomerRegistrationResponse(
