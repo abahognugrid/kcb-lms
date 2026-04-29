@@ -1,8 +1,6 @@
 <?php
 
 use App\Console\Commands\ApplyLoanPenalties;
-use App\Console\Commands\AutoWriteOffAfterDays;
-use App\Console\Commands\CleanupLogs;
 use App\Console\Commands\FlagOverdueLoans;
 use App\Console\Commands\PartnerSmsReminders;
 use App\Console\Commands\PastDueLoanReminders;

@@ -43,7 +43,7 @@ class GetPaidOffLoansReportDetailsAction
         }
 
         if ($this->loanProductId) {
-            $query->where('loan_product_id', $this->loanProductId);
+            $query->where('Loan_Product_ID', $this->loanProductId);
         }
 
         $query->withSum('loan_repayments', 'amount')

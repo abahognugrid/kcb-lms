@@ -26,7 +26,7 @@ class UserTableSeeder extends Seeder
 
         $partner_admin = User::create([
             'name' => 'KCB Admin',
-            'email' => 'admin@kcb.com',
+            'email' => 'admin@ug.kcbgroup.com',
             'is_admin' => false,
             'password' => Hash::make('password'),
             'password_changed_at' => now(),

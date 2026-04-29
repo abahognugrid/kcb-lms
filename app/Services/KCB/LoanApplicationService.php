@@ -216,7 +216,7 @@ class LoanApplicationService
                 'partner_id' => $partner->id,
                 'Type' => Transaction::DISBURSEMENT,
                 'Amount' => $amount,
-                'Status' => 'Pending',
+                'Status' => app()->isProduction() ? 'Pending' : 'Completed',
                 'Telephone_Number' => $customer->Telephone_Number,
                 'TXN_ID' => random_int(1000000000, 9999999999),
                 'Loan_Application_ID' => $loan_application->id
