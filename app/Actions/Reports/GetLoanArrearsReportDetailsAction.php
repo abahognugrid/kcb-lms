@@ -19,7 +19,7 @@ class GetLoanArrearsReportDetailsAction
     protected bool $getCountOnly = false;
     protected bool $suspendedInterest = false;
     protected bool $excludeWrittenOffLoans = false;
-    protected ?int $loanProductId = null;
+    protected ?int $loanProductId;
     protected ?int $partnerId;
 
     public function execute()
@@ -41,7 +41,7 @@ class GetLoanArrearsReportDetailsAction
                 $query->whereRaw('?::date - "Maturity_Date"::date > ?', [$this->endDate, 60]);
             })
             ->when($this->loanProductId, function ($query) {
-                $query->where('loan_product_id', $this->loanProductId);
+                $query->where('Loan_Product_ID', $this->loanProductId);
             })
             ->addSelect([
                 'principal_outstanding' => function ($query) {

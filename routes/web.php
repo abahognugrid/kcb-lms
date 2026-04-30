@@ -164,6 +164,7 @@ Route::middleware(['auth', 'force_password_change', EnforceTwoFactor::class])->g
     // Loan Accounts
     Route::middleware('permission:view loan-accounts')->get('/loan-accounts', [LoanController::class, 'index'])->name('loan-accounts.index');
     Route::middleware('permission:view loan-accounts')->put('/loan-accounts/{loan}/write-off', [LoanController::class, 'writeOff'])->name('loan-accounts.writeOff');
+    Route::middleware('permission:view loan-accounts')->put('/loan-accounts/{loan}/disburse-loan', [LoanController::class, 'disburseLoan'])->name('loan-accounts.disburse-loan');
     Route::middleware('permission:view loan-accounts')->get('/loan-accounts/{loan}', [LoanController::class, 'show'])->name('loan-accounts.show');
     Route::middleware('permission:view loan-accounts')->get('/loan-accounts/{loan}/ledger', [LoanController::class, 'ledger'])->name('loan-accounts.ledger');
     Route::middleware('permission:view loan-accounts')->get('/loan-accounts/{loan}/payment-velocity', [LoanController::class, 'paymentVelocity'])->name('loan-accounts.paymentVelocity');

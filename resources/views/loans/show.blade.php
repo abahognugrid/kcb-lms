@@ -29,6 +29,11 @@
                                 class="dropdown-item" type="button" {{ $loan->canWriteOff() ? '' : 'disabled' }}><i
                                     class="bx bx-edit-alt"></i> &nbsp;Write Off</button>
                         </li>
+                        <li>
+                            <button href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#confirmDisbursement"
+                                class="dropdown-item" type="button" {{ $loan->disbursementFailed() ? '' : 'disabled' }}><i
+                                    class="bx bx-edit-alt"></i> &nbsp;Retry Disbursement</button>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -153,7 +158,7 @@
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <strong>Telephone</strong>
                     <div>
-                        {{ $loan->customer->Telephone_Number ?? $loan->customer->Delinked_Phone_Number }}
+                        {{ $loan->customer->Telephone_Number }}
                     </div>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -372,6 +377,36 @@
                     <div class="modal-footer">
                         <form action="{{ route('loan-accounts.writeOff', $loan->id) }}" method="POST"
                             id="write-off-form">
+                            @csrf
+                            @method('PUT')
+                            <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">Cancel</button>
+                            &nbsp;&nbsp;
+                            <button type="submit" class="btn btn-danger">Confirm Action</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <!-- Disable Modal -->
+        <div class="modal fade" id="confirmDisbursement" data-bs-backdrop="static" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmDisbursementTitle">Confirm action
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to disburse this Loan?</p>
+                        <span class="text-danger">This action cannot be undone.</span>
+                    </div>
+                    <div class="modal-footer">
+                        <form action="{{ route('loan-accounts.disburse-loan', $loan->id) }}" method="POST"
+                            id="disburse-loan-form">
                             @csrf
                             @method('PUT')
                             <button type="button" class="btn btn-outline-secondary"

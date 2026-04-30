@@ -44,7 +44,12 @@ class LoanDatatable extends DataTableComponent
                 ->sortable(),
             Column::make('First Name', 'customer.First_Name')->searchable(),
             Column::make('Last Name', 'customer.Last_Name')->searchable(),
-            Column::make('Phone Number', 'customer.Telephone_Number')->searchable(),
+            Column::make('Phone Number', 'customer.Telephone_Number')
+                ->label(function ($record) {
+                    return $record->customer->Telephone_Number;
+                })
+                ->searchable(),
+            // Column::make('Phone Number', 'customer.Telephone_Number')->searchable(),
             Column::make('Account Status', 'Credit_Account_Status')
                 ->format(function ($value) {
                     return LoanAccountType::formattedName($value);

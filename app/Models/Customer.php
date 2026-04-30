@@ -6,19 +6,12 @@ use App\Enums\LoanAccountType;
 use App\Models\LoanRepayment;
 use App\Models\LoanDisbursement;
 use App\Models\Scopes\BarnScope;
-use App\Notifications\SmsNotification;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use App\Rules\ValidPhoneNumber;
-use Exception;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class Customer extends Model
@@ -62,6 +55,21 @@ class Customer extends Model
     protected static function booted()
     {
         static::addGlobalScope(new BarnScope); // You can barn a customer.
+    }
+
+    protected function telephoneNumber(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                if (! $this->Is_Delinked || ! is_null($this->attributes['Telephone_Number'])) {
+                    return $this->attributes['Telephone_Number'] ?? null;
+                }
+
+                return $this->Delinked_Phone_Number
+                    ? 'D-' . $this->Delinked_Phone_Number
+                    : null;
+            },
+        );
     }
 
     public static function rules($customer = null)

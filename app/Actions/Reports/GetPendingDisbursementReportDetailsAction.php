@@ -35,7 +35,7 @@ class GetPendingDisbursementReportDetailsAction
         }
 
         if ($this->loanProductId) {
-            $query->where('loan_product_id', $this->loanProductId);
+            $query->where('Loan_Product_ID', $this->loanProductId);
         }
 
         $query->orderBy(Customer::query()->select('First_Name')->whereColumn('customers.id', 'loan_applications.Customer_ID')->limit(1));

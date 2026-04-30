@@ -2,7 +2,7 @@
     <div class="card-header ">
         <div class="row">
             <div class="col-md-4">
-                <h5 class="mb-0">Black Listed Report</h5>
+                <h5 class="mb-0">Delinked Customer Report</h5>
             </div>
             <div class="col-md-8 d-flex justify-content-end">
                 <x-date-filter />

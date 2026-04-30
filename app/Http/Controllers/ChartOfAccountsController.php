@@ -23,7 +23,6 @@ class ChartOfAccountsController extends Controller
       ->orderBy('partner_id')
       ->orderBy('name')
       ->get();
-    dd($accounts);
     return view('chart-of-accounts.index', compact('accounts'));
   }
 

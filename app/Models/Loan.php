@@ -938,6 +938,11 @@ class Loan extends Model
         ]) && $this->isCleared() === false;
     }
 
+    public function disbursementFailed(): bool
+    {
+        return $this->Disbursement_Status == 'Failed';
+    }
+
     public function getStatusAttribute()
     {
         return self::SUPPORTED_Credit_Account_Statuses[$this->Credit_Account_Status];

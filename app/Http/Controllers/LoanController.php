@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Loans\WriteOffLoanAction;
+use App\Jobs\LoanDisbursementJob;
 use App\Models\Loan;
 use Illuminate\Http\Request;
 use App\Models\LoanApplication;
 use App\Models\LoanDisbursement;
 use App\Models\LoanSchedule;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
 class LoanController extends Controller
@@ -27,6 +29,20 @@ class LoanController extends Controller
             return redirect()
                 ->route('loan-accounts.show', ['loan' => $action->execute($loan, $details)])
                 ->with('success', 'Loan written off successfully.');
+        } catch (\Throwable $th) {
+            return back()->withError($th->getMessage());
+        }
+    }
+
+    public function disburseLoan(Loan $loan): \Illuminate\Http\RedirectResponse
+    {
+
+        try {
+            $transaction = Transaction::where('Loan_ID', $loan->id)->where('Type', 'Disbursement')->firstOrFail();
+            LoanDisbursementJob::dispatch($transaction);
+            return redirect()
+                ->route('loan-accounts.show', ['loan' => $loan])
+                ->with('success', 'Loan disbursed successfully.');
         } catch (\Throwable $th) {
             return back()->withError($th->getMessage());
         }

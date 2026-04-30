@@ -33,7 +33,7 @@
     <tbody>
         @foreach ($records as $record)
             <tr>
-                <td style="text-align: left">{{ $record->id }}</td>
+                <td style="text-align: left">{{ $record->Credit_Account_Reference }}</td>
                 <td style="text-align: left">{{ $record->customer->name }}</td>
                 <td style="text-align: right">{{ $record->customer->Telephone_Number }}</td>
                 <td style="text-align: right">{{ number_format($record->Facility_Amount_Granted) }}</td>

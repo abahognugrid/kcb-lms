@@ -78,25 +78,6 @@ class CreateApprovedLoanAction
             $disbursement->saveJournalEntries($transaction->id);
 
             DB::commit();
-
-            $interestRateMessagePart = $this->getInterestRateMessage($loan);
-            $productName = $loan->loan_product->Name;
-            $customer = $loan->customer;
-            $message = 'Congratulations ' . $customer->First_Name . ', your ' . $productName . ' request of UGX ' .
-                number_format($application->Credit_Amount_Approved) . $interestRateMessagePart . ' Dial ' .
-                $loan->loan_product->ussdCode() . ' to repay by ' .
-                $loan->Maturity_Date->toDateString() . ' to avoid late fees.';
-
-            $customer->notify(
-                new SmsNotification(
-                    $message,
-                    $customer->Telephone_Number,
-                    $customer->id,
-                    $loan->partner_id,
-                    $loan->partner->smsPrice(),
-                    $loan->partner->smsCost(),
-                )
-            );
             // Disburse money to phone
             LoanDisbursementJob::dispatch($transaction);
 
@@ -109,12 +90,5 @@ class CreateApprovedLoanAction
 
             return false;
         }
-    }
-
-    protected function getInterestRateMessage(Loan $loan): string
-    {
-        $message = ' at ';
-        $interestRate = $loan->Interest_Rate;
-        return $message . $interestRate . '% interest has been approved.';
     }
 }
